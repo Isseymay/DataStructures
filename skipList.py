@@ -50,13 +50,12 @@ class skipList:
                 
                 base = initial[i].value
                 curVal = initial[i]
-                level = 1
-                raised = random.choice([True,False])
                 self.lanes[-1].push(base)
+                raised = random.choice([True,False])
+                level = 1 # the current level (starting with 1) the number is up to so that it can be used to move backwards through the lanes list
                 while level<(height) and raised==True:
-
-                    temp = skipListIterator(curVal,base,self.lanes[-level])
-                    level+=1
+                    temp = skipListIterator(curVal,base,self.lanes[-level]) # getting the skipListIterator of the current lane to put as the element in the lane one step upwards
+                    level+=1 #adding to level so it is now referring to the lane one step up
                     self.lanes[-level].push(temp)
                     curVal = self.lanes[-level].back()
                     raised = random.choice([True,False])
@@ -133,18 +132,62 @@ class skipList:
 
     # not yet written
     def add(self,val):
-        pass
+        place = self.search(val) # currently an iter to base (or none if the val is greater than all current values)
+        
+        if place is None:
+            self.lanes[-1].push(val)
+        else:
+            self.lanes[-1].insert(val,self.base().begin()+2) #insert the value into the base (place is the issue TwT)
+            temp = place-1
+
+        # need to then escalate it up (need to write a search algorithm to find it's place in each upper level)
+        # need a node of the element in base to make the raised skipListIterator
+        # print(f"{self.lanes[-1]}, {self.lanes[-1].index(val)}")
+        tempIndex = self.lanes[-1].index(val) # this will find the first instance of val (which will always be the new node as it's always inserting into the iterator at the first instance of the number therefore becoming the first instance)
+        curNode = self.lanes[-1][tempIndex] 
+        level = 1
+        raised = random.choice([True,False])
+        if level<self.size_ and raised == True:
+            laneIter = self.laneSearch(val,(self.size_-level))
+            temp = skipListIterator(curNode,val,self.lanes[-level])
+
+            level+=1
+            if laneIter == None:
+                self.lanes[-level].push(temp)
+                curNode = self.lanes[-level].back()
+            else:
+                self.lanes[-level].insert(temp,laneIter)
+                curNode = laneIter.getNode()
+
+            raised = random.choice([True,False])
+
+    # will return the iter of the first instance of val or the element higher than it and will throw an error if laneNum out of range and will return None if val should be at the end
+    def laneSearch(self,val,laneNum): # here laneNum starts at 0 -> top (like the list structure)
+        if laneNum>= self.size_: # if the lane is out of bounds it can't have a position therefore returns None
+            raise Exception("laneNum out of range")
+        if laneNum == (self.size_-1): # if lane is base
+            return self.lanes[-1].find(val)
+        iter = self.lanes[laneNum].begin() # listIterator of a skipListIterator
+        if val<iter.val().val():
+            return self.lanes[laneNum].begin()
+        if val>self.lanes[laneNum].end().val().val():
+            return None # returns none if val greater than the last value of the lane (basically as a flag to show it needs to be pushed not inserted)
+        for i in range(self.size_):
+            if iter.val().val() == val:
+                return iter
+            iter+=1
+        return None
 
     # not yet written
     def delete(self,val):
         pass
 
-    # base algo (original with singly linked list) returns the listIterator to the base that either points to the first instance of the value or the value directly above it)
+    # base algo (original with singly linked list) returns the listIterator to the base that either points to the first instance of the value or the value directly above it .: can just add to base at the place iter that has been returned)
     def search(self,val):
         if val<self.front().value:
             return self.base().begin()
         if val>self.back().value:
-            return self.base().end()
+            return None # needs to not return the last value as insert doesn't work at the last value so it needs a special return to show that it needs to be pushed instead
         lane = 0
         while lane < self.size_:
             if len(self.lanes[lane])==0:
@@ -327,4 +370,27 @@ class skipListIterator:
     def __format__(self,format_specs):
         return f"{self.value}"
     
+
+# testing
+
+temp = skipList(3,[1,2,3,5,6,7,8])
+print(f"{temp}")
+print("adding...")
+temp.add(4)
+print("          ...added\n")
+print(f"{temp}")
+
+# twoDimensions = [linkedList([1,2,3,4]),linkedList([1,2,4])]
+# for i in twoDimensions:
+#     print(f"{i}")
+# print()
+# iter = twoDimensions[-1].begin()+2
+# twoDimensions[-1].insert(3,iter) # why tf is it behaving different here?????
+# for i in twoDimensions:
+#     print(f"{i}")
     
+# temp = linkedList([1,2,3,5,6,7,8])
+# a = temp.find(5)
+# print(f"{a}", a)
+# temp.insert(4,a)
+# print(f"{temp}")

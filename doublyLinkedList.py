@@ -94,24 +94,25 @@ class linkedList:
 
     # insert a value into the list at a specific positon (given either an index value or a list iterator) -- cannot insert to the end (pushes back the value currently in that spot)
     def insert(self,value,pos):
-        if value not in self:
-            tempNode = None
-            if type(pos) == int:
-                tempNode = self.__getitem__(pos)
-            elif type(pos) == listIterator:
-                tempNode = pos.getNode()
-            
-            try:
-                prevNode = tempNode.Prev
-                newNode = Node(value,prevNode,tempNode)
-                tempNode.setPrev(newNode)
-                if prevNode != None:
-                    prevNode.setNext(newNode)
-                else:
-                    self.head = newNode
-                self.size_+=1
-            except:
-                print("There was an error inserting, pos should be an index or a listIterator")
+        tempNode = None
+        if type(pos) == int:
+            tempNode = self.__getitem__(pos)
+        elif type(pos) == listIterator:
+            tempNode = pos.getNode()
+        else:
+            raise Exception("pos needs to be an int or listIterator")
+
+        try:
+            prevNode = tempNode.Prev
+            newNode = Node(value,prevNode,tempNode)
+            tempNode.setPrev(newNode)
+            if prevNode != None:
+                prevNode.setNext(newNode)
+            else:
+                self.head = newNode
+            self.size_+=1       
+        except:
+            print("There was an error inserting")
 
     # returns the node at the front of the list
     def front(self):
@@ -144,12 +145,18 @@ class linkedList:
     # returns the index of the first version of that value or none if it's not there.
     def index(self,val):
         iter = self.begin()
-        num = 0
-        for i in range(self.size_):
+        for i in range(self.size_-1):
             if iter.val() == val:
-                return num
+                return i
             iter+=1
-            num+=1
+        return None
+    
+    def find(self,val):
+        iter = self.begin()
+        for i in range(self.size_-1):
+            if iter.val() == val:
+                return iter
+            iter+=1
         return None
     
     # will return an iterator that points to the first node
@@ -241,9 +248,13 @@ class linkedList:
         
         if self.size_>0:
             iter = self.begin()
+            # print(f"======{iter}")
             out+=f"{iter.val()}"
             for i in range(self.size_-1):
                 iter+=1
+                # if iter is not None:
+                #     print(f"======={iter}")
+                # print(i, iter, self.size_)
                 if (i<(self.size_-1)):
                     out+=", "
                 out+=f"{iter.val()}"  
