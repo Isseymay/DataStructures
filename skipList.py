@@ -139,8 +139,6 @@ class skipList:
             self.lanes[-1].insert(val,place) #insert the value into the base (place is the issue TwT)
             temp = place-1
 
-        # ^ works
-
         # need to then escalate it up (need to write a search algorithm to find it's place in each upper level)
         # need a node of the element in base to make the raised skipListIterator
         tempIndex = self.lanes[-1].index(val) # this will find the first instance of val (which will always be the new node as it's always inserting into the iterator at the first instance of the number therefore becoming the first instance)
@@ -192,9 +190,22 @@ class skipList:
             iter+=1
         return None
 
-    # not yet written
+    # sort of works but need to fix it so that it actually only deletes the connected ones from the upper lanes (make new skip list iterators and search with them?)
     def delete(self,val):
-        pass
+        self.lanes[-1].delete(val)
+        laneIndex = self.size_-2
+        found = True
+        while laneIndex>=0 and found == True:
+            lane = self.lanes[laneIndex]
+            iter = lane.begin()
+            found = False
+            for i in range(len(lane)):
+                if iter.val().val() == val:
+                    self.lanes[laneIndex].delete(iter.val())
+                    found = True
+                    break
+                iter+=1
+            laneIndex-=1
 
     # base algo (original with singly linked list) returns the listIterator to the base that either points to the first instance of the value or the value directly above it .: can just add to base at the place iter that has been returned)
     def search(self,val):
@@ -386,3 +397,8 @@ class skipListIterator:
     
 
 # testing
+temp = skipList(3,[1,2,3,4,5,5,5,6])
+print(f"{temp}")
+print("deleting......\n")
+temp.delete(5)
+print(f"{temp}")

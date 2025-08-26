@@ -172,8 +172,6 @@ class linkedList:
         # if no length is entered it is autoatically set to 1
         if length == None:
             length = 1
-
-
         # connecting the front of the splice section to the destination
         if self.size_==0:
             self.head = source.getNode()
@@ -211,7 +209,7 @@ class linkedList:
     # deletes the first instance of a value from the list
     def delete(self,value):
         iter = self.begin()
-        for i in range(self.size_-1):
+        for i in range(self.size_):
             if iter.val() == value:
                 if iter.getNode().Prev != None:
                     prev = iter.getNode().Prev
@@ -219,7 +217,9 @@ class linkedList:
                 if iter.getNode().Next != None:
                     next = iter.getNode().Next
                     next.setPrev(iter.getNode().Prev)
+                self.size_-=1
                 break
+            iter+=1
 
     # bubble sort bc I said so
     def sortList(self):
