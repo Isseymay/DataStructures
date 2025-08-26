@@ -130,50 +130,64 @@ class skipList:
             # print the two lists joined with no gaps ""
             # repeat except for base, with base just print the joined version of base
 
-    # not yet written
+    # currently adding twice to base (in wrong spot) then adding none to upper lane
     def add(self,val):
-        place = self.search(val) # currently an iter to base (or none if the val is greater than all current values)
-        
+        place = self.laneSearch(val,(self.size_-1)) # currently an iter to base (or none if the val is greater than all current values)
         if place is None:
             self.lanes[-1].push(val)
         else:
-            self.lanes[-1].insert(val,self.base().begin()+2) #insert the value into the base (place is the issue TwT)
+            self.lanes[-1].insert(val,place) #insert the value into the base (place is the issue TwT)
             temp = place-1
+
+        # ^ works
 
         # need to then escalate it up (need to write a search algorithm to find it's place in each upper level)
         # need a node of the element in base to make the raised skipListIterator
-        # print(f"{self.lanes[-1]}, {self.lanes[-1].index(val)}")
         tempIndex = self.lanes[-1].index(val) # this will find the first instance of val (which will always be the new node as it's always inserting into the iterator at the first instance of the number therefore becoming the first instance)
         curNode = self.lanes[-1][tempIndex] 
-        level = 1
+        level = 2
         raised = random.choice([True,False])
-        if level<self.size_ and raised == True:
+        while level<=self.size_ and raised == True:
+            
             laneIter = self.laneSearch(val,(self.size_-level))
-            temp = skipListIterator(curNode,val,self.lanes[-level])
+            temp = skipListIterator(curNode,val,self.lanes[-(level)])
 
-            level+=1
+            
             if laneIter == None:
                 self.lanes[-level].push(temp)
                 curNode = self.lanes[-level].back()
             else:
                 self.lanes[-level].insert(temp,laneIter)
                 curNode = laneIter.getNode()
-
+            level+=1
             raised = random.choice([True,False])
 
+    # REWRITE THIS!!!!!!!!!
     # will return the iter of the first instance of val or the element higher than it and will throw an error if laneNum out of range and will return None if val should be at the end
-    def laneSearch(self,val,laneNum): # here laneNum starts at 0 -> top (like the list structure)
+    def laneSearch(self,val,laneNum): # here laneNum starts at 0 -> lane 0 (like the list structure)
         if laneNum>= self.size_: # if the lane is out of bounds it can't have a position therefore returns None
             raise Exception("laneNum out of range")
-        if laneNum == (self.size_-1): # if lane is base
-            return self.lanes[-1].find(val)
-        iter = self.lanes[laneNum].begin() # listIterator of a skipListIterator
-        if val<iter.val().val():
+        base = False
+        if laneNum == (self.size_-1): # if lane is base (wrong)
+            base = True
+        iter = self.lanes[laneNum].begin()
+        temp = iter.val() # listIterator of a skipListIterator
+        if not base:
+            temp = temp.val()
+        if val<temp:
             return self.lanes[laneNum].begin()
-        if val>self.lanes[laneNum].end().val().val():
+        temp2 = self.lanes[laneNum].end().val()
+        if not base:
+            temp2 = temp2.val()
+        if val>temp2:
             return None # returns none if val greater than the last value of the lane (basically as a flag to show it needs to be pushed not inserted)
-        for i in range(self.size_):
-            if iter.val().val() == val:
+        for i in range(self.lanes[laneNum].size()):
+            temp3 = iter.val()
+            if not base:
+                temp3 = temp3.val()
+            if temp3 == val:
+                return iter
+            elif temp3>val:
                 return iter
             iter+=1
         return None
@@ -372,25 +386,3 @@ class skipListIterator:
     
 
 # testing
-
-temp = skipList(3,[1,2,3,5,6,7,8])
-print(f"{temp}")
-print("adding...")
-temp.add(4)
-print("          ...added\n")
-print(f"{temp}")
-
-# twoDimensions = [linkedList([1,2,3,4]),linkedList([1,2,4])]
-# for i in twoDimensions:
-#     print(f"{i}")
-# print()
-# iter = twoDimensions[-1].begin()+2
-# twoDimensions[-1].insert(3,iter) # why tf is it behaving different here?????
-# for i in twoDimensions:
-#     print(f"{i}")
-    
-# temp = linkedList([1,2,3,5,6,7,8])
-# a = temp.find(5)
-# print(f"{a}", a)
-# temp.insert(4,a)
-# print(f"{temp}")

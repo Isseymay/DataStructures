@@ -145,7 +145,7 @@ class linkedList:
     # returns the index of the first version of that value or none if it's not there.
     def index(self,val):
         iter = self.begin()
-        for i in range(self.size_-1):
+        for i in range(self.size_):
             if iter.val() == val:
                 return i
             iter+=1
