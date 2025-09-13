@@ -1,5 +1,5 @@
 import copy
-from doublyLinkedList import linkedList,listIterator
+from doubly_linkedlist import linkedList,listIterator
 
 sizes = [1,13,59,127,257,541,1109,2357,5087,10273,20753,42043,85229,172993,351061,712697,1447153,2938679]
 

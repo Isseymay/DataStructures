@@ -1,4 +1,4 @@
-from doublyLinkedList import linkedList,listIterator,Node
+from doubly_linkedlist import linkedList,listIterator,Node
 import random
 
 # todo: 
