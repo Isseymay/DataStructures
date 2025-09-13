@@ -27,7 +27,7 @@ class SkipList:
             self.lanes.append(LinkedList([]))
 
         # if initial is a linked list - using the linked list to work initial values into the skip list
-        if type(initial) == LinkedList:
+        if isinstance(initial, LinkedList):
             initial.sort_list()  # has to be sorted
             for i in range(len(initial)):
                 base = initial[i].value
@@ -43,7 +43,7 @@ class SkipList:
                     raised = random.choice([True, False])
 
         # if initial is a list - using the list to work initial values into the skip list
-        elif type(initial) == list:
+        elif isinstance(initial, list):
             # this could be done in a better way but this will work for now.
             initial.sort()
             initial = LinkedList(initial)
