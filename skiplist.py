@@ -1,4 +1,4 @@
-from doubly_linkedlist import linkedList,listIterator,Node
+from doubly_linkedlist import LinkedList,ListIterator,Node
 import random
 
 # todo: 
@@ -14,50 +14,50 @@ import random
 #   -> begin/end (done)
 #   -> testing (in progress)
 
-class skipList:
+class SkipList:
     #initializing the skip list
     def __init__(self,height,initial):
         self.lanes = []
         self.size_ = height
         # making a list of the right height full of empty linked lists
         for i in range(height):
-            self.lanes.append(linkedList([]))
+            self.lanes.append(LinkedList([]))
 
         # if initial is a linked list - using the linked list to work initial values into the skip list
-        if type(initial) == linkedList:
-            initial.sortList() # has to be sorted
+        if type(initial) == LinkedList:
+            initial.sort_list() # has to be sorted
             for i in range(len(initial)):
                 
                 base = initial[i].value
-                curVal = initial[i]
+                cur_val = initial[i]
                 level = 1
                 raised = random.choice([True,False])
                 self.lanes[-1].push(base)
                 while level<(height) and raised==True:
 
-                    temp = skipListIterator(curVal,base,self.lanes[-level])
+                    temp = SkipListIterator(cur_val, base, self.lanes[-level])
                     level+=1
                     self.lanes[-level].push(temp)
-                    curVal = self.lanes[-level].back()
+                    cur_val = self.lanes[-level].back()
                     raised = random.choice([True,False])
 
         # if initial is a list - using the list to work initial values into the skip list 
         elif type(initial) == list:
             # this could be done in a better way but this will work for now.
             initial.sort()
-            initial = linkedList(initial)
+            initial = LinkedList(initial)
             for i in range(len(initial)):
                 
                 base = initial[i].value
-                curVal = initial[i]
+                cur_val = initial[i]
                 self.lanes[-1].push(base)
                 raised = random.choice([True,False])
                 level = 1 # the current level (starting with 1) the number is up to so that it can be used to move backwards through the lanes list
                 while level<(height) and raised==True:
-                    temp = skipListIterator(curVal,base,self.lanes[-level]) # getting the skipListIterator of the current lane to put as the element in the lane one step upwards
+                    temp = SkipListIterator(cur_val, base, self.lanes[-level]) # getting the skipListIterator of the current lane to put as the element in the lane one step upwards
                     level+=1 #adding to level so it is now referring to the lane one step up
                     self.lanes[-level].push(temp)
-                    curVal = self.lanes[-level].back()
+                    cur_val = self.lanes[-level].back()
                     raised = random.choice([True,False])
 
     # making it so that the skip list will print in one of two formats        
@@ -132,7 +132,7 @@ class skipList:
 
     # currently adding twice to base (in wrong spot) then adding none to upper lane
     def add(self,val):
-        place = self.laneSearch(val,(self.size_-1)) # currently an iter to base (or none if the val is greater than all current values)
+        place = self.lane_search(val, (self.size_ - 1)) # currently an iter to base (or none if the val is greater than all current values)
         if place is None:
             self.lanes[-1].push(val)
         else:
@@ -143,45 +143,45 @@ class skipList:
 
         # need to then escalate it up (need to write a search algorithm to find it's place in each upper level)
         # need a node of the element in base to make the raised skipListIterator
-        tempIndex = self.lanes[-1].index(val) # this will find the first instance of val (which will always be the new node as it's always inserting into the iterator at the first instance of the number therefore becoming the first instance)
-        curNode = self.lanes[-1][tempIndex] 
+        temp_index = self.lanes[-1].index(val) # this will find the first instance of val (which will always be the new node as it's always inserting into the iterator at the first instance of the number therefore becoming the first instance)
+        cur_node = self.lanes[-1][temp_index]
         level = 2
         raised = random.choice([True,False])
         while level<=self.size_ and raised == True:
             
-            laneIter = self.laneSearch(val,(self.size_-level))
-            temp = skipListIterator(curNode,val,self.lanes[-(level)])
+            lane_iter = self.lane_search(val, (self.size_ - level))
+            temp = SkipListIterator(cur_node, val, self.lanes[-(level)])
 
             
-            if laneIter == None:
+            if lane_iter == None:
                 self.lanes[-level].push(temp)
-                curNode = self.lanes[-level].back()
+                cur_node = self.lanes[-level].back()
             else:
-                self.lanes[-level].insert(temp,laneIter)
-                curNode = laneIter.getNode()
+                self.lanes[-level].insert(temp,lane_iter)
+                cur_node = lane_iter.get_node()
             level+=1
             raised = random.choice([True,False])
 
     # REWRITE THIS!!!!!!!!!
     # will return the iter of the first instance of val or the element higher than it and will throw an error if laneNum out of range and will return None if val should be at the end
-    def laneSearch(self,val,laneNum): # here laneNum starts at 0 -> lane 0 (like the list structure)
-        if laneNum>= self.size_: # if the lane is out of bounds it can't have a position therefore returns None
+    def lane_search(self, val, lane_num): # here laneNum starts at 0 -> lane 0 (like the list structure)
+        if lane_num>= self.size_: # if the lane is out of bounds it can't have a position therefore returns None
             raise Exception("laneNum out of range")
         base = False
-        if laneNum == (self.size_-1): # if lane is base (wrong)
+        if lane_num == (self.size_ - 1): # if lane is base (wrong)
             base = True
-        iter = self.lanes[laneNum].begin()
+        iter = self.lanes[lane_num].begin()
         temp = iter.val() # listIterator of a skipListIterator
         if not base:
             temp = temp.val()
         if val<temp:
-            return self.lanes[laneNum].begin()
-        temp2 = self.lanes[laneNum].end().val()
+            return self.lanes[lane_num].begin()
+        temp2 = self.lanes[lane_num].end().val()
         if not base:
             temp2 = temp2.val()
         if val>temp2:
             return None # returns none if val greater than the last value of the lane (basically as a flag to show it needs to be pushed not inserted)
-        for i in range(self.lanes[laneNum].size()):
+        for i in range(self.lanes[lane_num].size()):
             temp3 = iter.val()
             if not base:
                 temp3 = temp3.val()
@@ -208,58 +208,58 @@ class skipList:
                 lane+=1
                 continue
             temp = self.lanes[lane].begin()
-            return self.searchRec(temp,temp,lane,val,True)
+            return self.search_rec(temp, temp, lane, val, True)
 
     
     # uses a recursive method to search the skip list (standard singly linked list algorithm)
-    def searchRec(self,curIter,oldIter,lane,val,same):
-        curVal = curIter.val()
+    def search_rec(self, cur_iter, old_iter, lane, val, same):
+        cur_val = cur_iter.val()
         if lane<(self.size_-1):
-            curVal = curVal.val()
-        if val == curVal:
+            cur_val = cur_val.val()
+        if val == cur_val:
             if lane == (self.size_-1):
-                return curIter
+                return cur_iter
             elif not same:
-                temp = listIterator(oldIter.val().getNode(),self.lanes[lane+1])
-                a = self.searchRec(temp,temp,lane+1,val,True)
+                temp = ListIterator(old_iter.val().get_node(), self.lanes[lane + 1])
+                a = self.search_rec(temp, temp, lane + 1, val, True)
                 return a
             else:
-                a = self.searchRec(self.lanes[lane+1].begin(),self.lanes[lane+1].begin(),lane+1,val,True)
+                a = self.search_rec(self.lanes[lane + 1].begin(), self.lanes[lane + 1].begin(), lane + 1, val, True)
                 return a
-        elif curVal > val:
+        elif cur_val > val:
             if lane == (self.size_-1):
-                return curIter
+                return cur_iter
             elif same:
-                a = self.searchRec(self.lanes[lane+1].begin(),self.lanes[lane+1].begin(),lane+1,val,True)
+                a = self.search_rec(self.lanes[lane + 1].begin(), self.lanes[lane + 1].begin(), lane + 1, val, True)
                 return a
             else:
-                temp = listIterator(oldIter.val().getNode(),self.lanes[lane+1])
-                a = self.searchRec(temp,temp,lane+1,val,True)
+                temp = ListIterator(old_iter.val().get_node(), self.lanes[lane + 1])
+                a = self.search_rec(temp, temp, lane + 1, val, True)
                 return a
         else:
-            if curIter.getNode().Next != None:
-                temp = curIter
-                a = self.searchRec(curIter+1,temp,lane,val,False)
+            if cur_iter.get_node().prev != None:
+                temp = cur_iter
+                a = self.search_rec(cur_iter + 1, temp, lane, val, False)
                 return a
             else:
-                temp = listIterator(curIter.val().getNode(),self.lanes[lane+1])
-                a = self.searchRec(temp,temp,lane+1,val,True)
+                temp = ListIterator(cur_iter.val().get_node(), self.lanes[lane + 1])
+                a = self.search_rec(temp, temp, lane + 1, val, True)
                 return a
             
 
     # if its a valid lane, returns the whole linked list
-    def getLane(self,lane):
+    def get_lane(self, lane):
         if lane>=self.size_:
-            return linkedList([])
+            return LinkedList([])
         else:
             return self.lanes[lane]
     
     # if its a valid, returns the size of the lane otherwise returns 0
-    def sizeOfLane(self,lane):
-        return self.getLane(lane).size()
+    def size_of_lane(self, lane):
+        return self.get_lane(lane).size()
     
     # returns the number of elements in the base list
-    def numElements(self):
+    def num_elements(self):
         return self.base().size()
     
     # returns the base linked list
@@ -268,15 +268,15 @@ class skipList:
         
     # returns true id the skip list is emtpy
     def empty(self):
-        return self.numElements()==0
+        return self.num_elements()==0
     
     # dunder method to make len(skipList) work
     def __len__(self):
         return self.base().size()             
 
     # converts skip list to list based off linked list method
-    def convertToList(self):
-        return self.base().convertToList()
+    def convert_to_list(self):
+        return self.base().convert_to_list()
     
     # returns the first node of the base
     def front(self):
@@ -292,11 +292,11 @@ class skipList:
         return a.val()==val
 
     # pops the first node from the skip list (based off the c++ pop)
-    def popFront(self):
+    def pop_front(self):
         val = self.front()
         for i in range(self.size_):
             if self.lanes[i].front() == val:
-                self.lanes[i].popFront()
+                self.lanes[i].pop_front()
 
     # pops the last node from the skip list (based off the c++ pop)
     def pop(self):
@@ -306,30 +306,30 @@ class skipList:
                 self.lanes[i].pop()
 
     # fully reconfigures the skip list to contain more lanes, re-issuing new max heights to each element using the same initial process
-    def reconfigure(self,newHeight):
+    def reconfigure(self, new_height):
         lst = self.base()
         self.lanes = []
-        self.size_ = newHeight
-        for i in range(newHeight):
-            self.lanes.append(linkedList([]))
+        self.size_ = new_height
+        for i in range(new_height):
+            self.lanes.append(LinkedList([]))
         for i in range(len(lst)):
             
             base = lst[i].value
-            curVal = lst[i]
+            cur_val = lst[i]
             level = 1
             raised = random.choice([True,False])
             self.lanes[-1].push(base)
-            while level<(newHeight) and raised==True:
+            while level<(new_height) and raised==True:
 
-                temp = skipListIterator(curVal,base,self.lanes[-level])
+                temp = SkipListIterator(cur_val, base, self.lanes[-level])
                 level+=1
                 self.lanes[-level].push(temp)
-                curVal = self.lanes[-level].back()
+                cur_val = self.lanes[-level].back()
                 raised = random.choice([True,False])
 
 # iterator that will be used in the lanes of the skip list to ensure that all processes can be easlily performed (similar to the linkedListIterator but it contains one more attribute and method. The attribute is base value (the value at the base of the skip list column), and the method is used to get said vlaue)
-class skipListIterator:
-    def __init__(self,node: Node,value,lst:linkedList):
+class SkipListIterator:
+    def __init__(self,node: Node,value,lst:LinkedList):
         self.node = node
         self.value=value
         self.list=lst
@@ -337,18 +337,18 @@ class skipListIterator:
     # dunder method so that iterator+=number will correctly increment it with relation to the current lane of the skip list
     def __iadd__(self,other: int):
         for i in range(other):
-            if self.node.Next!= None:
-                self.node = self.node.Next
+            if self.node.prev!= None:
+                self.node = self.node.prev
             else:
                 return None
         return self
     
     # dunder method so that iterator+number will return a new iterator incremented with relation to the current lane of the skip list
     def __add__(self,other:int):
-        temp = listIterator(self.node, self.list)
+        temp = ListIterator(self.node, self.list)
         for i in range(other):
-            if temp.getNode().Next!= None:
-                temp.node = temp.getNode().Next
+            if temp.get_node().prev!= None:
+                temp.node = temp.get_node().prev
             else:
                 break
         return temp
@@ -356,18 +356,18 @@ class skipListIterator:
     # dunder method such that iterator-=number will decrement the iterator with respect to the current lane of the skip list
     def __isub__(self, other: int):
         for i in range(other):
-            if self.node.Prev != None:
-                self.node = self.node.Prev
+            if self.node.prev != None:
+                self.node = self.node.prev
             else:
                 return None
         return self
     
     # dunder method such that iterator-number will return a new iterator that has been decremented with respect to the current lane of the skip list
     def __sub__(self, other: int):
-        temp = listIterator(self.node,self.list)
+        temp = ListIterator(self.node,self.list)
         for i in range(other):
-            if temp.getNode().Prev != None:
-                temp.node = temp.getNode().Prev
+            if temp.get_node().prev != None:
+                temp.node = temp.get_node().prev
             else:
                 break
         return temp
@@ -377,7 +377,7 @@ class skipListIterator:
         return self.value
     
     # gets the whole node at this iterator (like using * in c++)
-    def getNode(self):
+    def get_node(self):
         return self.node
     
     # makes it so that when you print this iterator, it prints just the base value

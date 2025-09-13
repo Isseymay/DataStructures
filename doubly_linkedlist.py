@@ -1,26 +1,26 @@
 # Node class to make the nodes that make up the doubly linked list (therefore need to store both the previous and future nodes)
 class Node:
     # Node constructor that allows for a node to be created without a previous or next
-    def __init__(self, value, Prev, Next):
+    def __init__(self, value, prev, next_):
         self.value = value
-        self.Prev = None
-        self.Next= None
-        if (Prev!=None):
-            self.Prev = Prev
-        if (Next!=None):
-            self.Next = Next
+        self.prev = None
+        self.next= None
+        if (prev!=None):
+            self.prev = prev
+        if (next_!=None):
+            self.next = next_
 
     # set the previous node 
-    def setPrev(self,Prev):
-        self.Prev = Prev
+    def set_prev(self, prev):
+        self.prev = prev
 
     # set the node's value (the node must always have a value but this allows it to be changed)
-    def setVal(self,val):
+    def set_val(self, val):
         self.value = val
 
     # set the next node
-    def setNext(self,Next):
-        self.Next = Next
+    def set_next(self, next_):
+        self.prev = next_
 
     # make it so that when a node is used in an f-string it will only use it's value (for readability)
     def __format__(self,format_specs):
@@ -40,7 +40,7 @@ class Node:
     
 
 # Class to actually make the linked list and all it's methods
-class linkedList:
+class LinkedList:
     # constructor method that allows an initial list to be passed in to instantiate values
     def __init__(self, initial: list):
         self.size_ = 0 # stores the length of the list
@@ -51,7 +51,7 @@ class linkedList:
                 self.push(val)
 
     # pushes a value to the front of the list
-    def pushFront(self,value):
+    def push_front(self, value):
         temp = Node(value,None,self.head)
         self.head = temp
         self.size_+=1
@@ -60,10 +60,10 @@ class linkedList:
     def push(self,value):
         if (self.size_>0):
             iter = self.end()
-            curNode = iter.getNode()
+            cur_node = iter.get_node()
             
-            temp = Node(value,curNode,None)
-            curNode.setNext(temp)
+            temp = Node(value,cur_node,None)
+            cur_node.set_next(temp)
         else:
             temp = Node(value,None,None)
             self.head = temp
@@ -74,42 +74,42 @@ class linkedList:
         if index > self.size_:
             return None
         iter = self.begin()+(index) 
-        return iter.getNode()
+        return iter.get_node()
     
     # dunder methat so that writing list[index] = value will actually change the value of the node at that position
     def __setitem__(self,index,val):
         iter = self.begin()+(index) 
-        iter.getNode().setVal(val)
+        iter.get_node().set_val(val)
 
     # pops the first node out of the list (moves the head down by one value)
-    def popFront(self):
-        self.head = self.head.Next
+    def pop_front(self):
+        self.head = self.head.prev
         self.size_-=1
 
     # pops the last value from the list (changes the second last node to go to None instead of the next node)
     def pop(self):
-        secondLast = self.end()-1
-        secondLast.getNode().setNext(None)
+        second_last = self.end()-1
+        second_last.get_node().set_next(None)
         self.size_-=1
 
     # insert a value into the list at a specific positon (given either an index value or a list iterator) -- cannot insert to the end (pushes back the value currently in that spot)
     def insert(self,value,pos):
-        tempNode = None
+        temp_node = None
         if type(pos) == int:
-            tempNode = self.__getitem__(pos)
-        elif type(pos) == listIterator:
-            tempNode = pos.getNode()
+            temp_node = self.__getitem__(pos)
+        elif type(pos) == ListIterator:
+            temp_node = pos.get_node()
         else:
             raise Exception("pos needs to be an int or listIterator")
 
         try:
-            prevNode = tempNode.Prev
-            newNode = Node(value,prevNode,tempNode)
-            tempNode.setPrev(newNode)
-            if prevNode != None:
-                prevNode.setNext(newNode)
+            prev_node = temp_node.prev
+            new_node = Node(value,prev_node,temp_node)
+            temp_node.set_prev(new_node)
+            if prev_node != None:
+                prev_node.set_next(new_node)
             else:
-                self.head = newNode
+                self.head = new_node
             self.size_+=1       
         except:
             print("There was an error inserting")
@@ -120,7 +120,7 @@ class linkedList:
     
     # returns the node at the end of the list
     def back(self):
-        return self.end().getNode()
+        return self.end().get_node()
 
     # returns a boolean that is true if the list is empty
     def empty(self):
@@ -161,11 +161,11 @@ class linkedList:
     
     # will return an iterator that points to the first node
     def begin(self):
-        return listIterator(self.head,self)
+        return ListIterator(self.head, self)
     
     # will return an iterator that points to the last node
     def end(self):
-        return listIterator(self.head,self)+(self.size_)
+        return ListIterator(self.head, self)+(self.size_)
     
     # given an iterator for the destination of the data (within the current list), an iterator that points to where the data should come from and the number of elements to be moved, this method will transfer the nodes to directly after the destination node cutting them from where they originally were
     def splice(self,dest, source, length):
@@ -176,33 +176,33 @@ class linkedList:
 
         # connecting the front of the splice section to the destination
         if self.size_==0:
-            self.head = source.getNode()
-            source.getNode().setPrev(None)
+            self.head = source.get_node()
+            source.get_node().set_prev(None)
             end = source+length
-            end.getNode().setNext(None)
-            # end.getNode().Next.setPrev(end.getNode())
+            end.get_node().set_next(None)
+            # end.get_node().Next.setPrev(end.get_node())
         else:
-            dest.getNode().setNext(source.getNode())
-            source.getNode().setPrev(dest.getNode())
+            dest.get_node().set_next(source.get_node())
+            source.get_node().set_prev(dest.get_node())
 
             # if dest isn't the last value in the list, the end of the splice section is connected to it
-            tempEnd = dest.getNode().Next
-            if tempEnd!=None:
+            temp_end = dest.get_node().prev
+            if temp_end!=None:
                 end = source+length
-                end.getNode().setNext(tempEnd)
-                end.getNode().Next.setPrev(end.getNode())
+                end.get_node().set_next(temp_end)
+                end.get_node().prev.set_prev(end.get_node())
         
 
         # disconnecting  the spliced section from it's original place
-        sourceEnd = (source+length).getNode().Next
-        if source.list.head == source.getNode():
-            source.list.head = (source+length).getNode().Next
+        sourceEnd = (source+length).get_node().prev
+        if source.list.head == source.get_node():
+            source.list.head = (source+length).get_node().prev
             if sourceEnd!=None:
-                sourceEnd.setPrev(None)
+                sourceEnd.set_prev(None)
         else:
-            sourcePrev = source.getNode().Prev
-            sourcePrev.setNext(sourceEnd)
-            sourceEnd.setPrev(sourcePrev)
+            sourcePrev = source.get_node().prev
+            sourcePrev.set_next(sourceEnd)
+            sourceEnd.set_prev(sourcePrev)
 
         # updating the sizes of the lists that were affected
         dest.list.size_+=length
@@ -213,16 +213,16 @@ class linkedList:
         iter = self.begin()
         for i in range(self.size_-1):
             if iter.val() == value:
-                if iter.getNode().Prev != None:
-                    prev = iter.getNode().Prev
-                    prev.setNext(iter.getNode().Next)
-                if iter.getNode().Next != None:
-                    next = iter.getNode().Next
-                    next.setPrev(iter.getNode().Prev)
+                if iter.get_node().prev != None:
+                    prev = iter.get_node().prev
+                    prev.set_next(iter.get_node().prev)
+                if iter.get_node().prev != None:
+                    next = iter.get_node().prev
+                    next.set_prev(iter.get_node().prev)
                 break
 
     # bubble sort bc I said so
-    def sortList(self):
+    def sort_list(self):
         passes = 1
         swapped = False
         while passes<(self.size_-1):
@@ -261,7 +261,7 @@ class linkedList:
         out+="]"
         return out
     
-    def convertToList(self):
+    def convert_to_list(self):
         temp = []
         iter = self.begin()
         for i in range(self.size_):
@@ -269,27 +269,27 @@ class linkedList:
             iter+=1
         return temp
     
-class listIterator:
+class ListIterator:
     # constructor method for pointer/iterator that requires a starting node and the list it should be part of
-    def __init__(self, node: Node, lst: linkedList):
+    def __init__(self, node: Node, lst: LinkedList):
         self.node = node
         self.list = lst
 
     # dunder method so that iterator+=number will correctly increment it with relation to the list
     def __iadd__(self,other: int):
         for i in range(other):
-            if self.node.Next!= None:
-                self.node = self.node.Next
+            if self.node.prev!= None:
+                self.node = self.node.prev
             else:
                 return None
         return self
 
     # dunder method so that iterator+number will return a new iterator incremented with relation to the list
     def __add__(self,other:int):
-        temp = listIterator(self.node, self.list)
+        temp = ListIterator(self.node, self.list)
         for i in range(other):
-            if temp.getNode().Next!= None:
-                temp.node = temp.getNode().Next
+            if temp.get_node().prev!= None:
+                temp.node = temp.get_node().prev
             else:
                 break
         return temp
@@ -297,18 +297,18 @@ class listIterator:
     # dunder method such that iterator-=number will decrement the iterator with respect to the list
     def __isub__(self, other: int):
         for i in range(other):
-            if self.node.Prev != None:
-                self.node = self.node.Prev
+            if self.node.prev != None:
+                self.node = self.node.prev
             else:
                 return None
         return self
 
     # dunder method such that iterator-number will return a new iterator that has been decremented with respect to the list
     def __sub__(self, other: int):
-        temp = listIterator(self.node,self.list)
+        temp = ListIterator(self.node, self.list)
         for i in range(other):
-            if temp.getNode().Prev != None:
-                temp.node = temp.getNode().Prev
+            if temp.get_node().prev != None:
+                temp.node = temp.get_node().prev
             else:
                 break
         return temp
@@ -318,7 +318,7 @@ class listIterator:
         return self.node.value
     
     # returns the iterator's node
-    def getNode(self):
+    def get_node(self):
         return self.node
     
     # dunder method such that f"{listIterator}" will show the value of the node
