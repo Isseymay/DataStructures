@@ -32,9 +32,9 @@ class LinkedList:
         self.size_ = 0 # stores the length of the list
         self.head: Node | None = None # the head of the list starts at None but will be assigned a Node when nodes are added
 
-        if len(initial)>0: # going through and pushing all values fron the initializing list
-            for val in initial:
-                self.push(val)
+         # going through and pushing all values fron the initializing list
+        for val in initial:
+            self.push(val)
 
     # pushes a value to the front of the list
     def push_front(self, value):
