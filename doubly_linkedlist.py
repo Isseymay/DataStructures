@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from collections.abc import Iterator
 from dataclasses import dataclass
-
+from collections.abc import MutableSequence
 
 @dataclass
 class Node[T]:
@@ -26,7 +26,7 @@ class Node[T]:
     
 
 # Class to actually make the linked list and all it's methods
-class LinkedList[T]:
+class LinkedList[T](MutableSequence[T]):
     # constructor method that allows an initial list to be passed in to instantiate values
     def __init__(self, initial: list[T]):
         self.size = 0
