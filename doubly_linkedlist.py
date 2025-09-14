@@ -1,10 +1,13 @@
 # Node class to make the nodes that make up the doubly linked list (therefore need to store both the previous and future nodes)
+from collections.abc import Iterator
+
+
 class Node:
     # Node constructor that allows for a node to be created without a previous or next
     def __init__(self, value, prev, next_):
         self.value = value
-        self.prev = None
-        self.next= None
+        self.prev: Node | None = None
+        self.next: Node | None = None
         if (prev!=None):
             self.prev = prev
         if (next_!=None):
@@ -44,7 +47,7 @@ class LinkedList:
     # constructor method that allows an initial list to be passed in to instantiate values
     def __init__(self, initial: list):
         self.size_ = 0 # stores the length of the list
-        self.head = None # the head of the list starts at None but will be assigned a Node when nodes are added
+        self.head: Node | None = None # the head of the list starts at None but will be assigned a Node when nodes are added
 
         if len(initial)>0: # going through and pushing all values fron the initializing list
             for val in initial:
@@ -58,15 +61,11 @@ class LinkedList:
 
     # pushes a value to the end of the list
     def push(self,value):
-        if (self.size_>0):
-            iter = self.end()
-            cur_node = iter.get_node()
-            
-            temp = Node(value,cur_node,None)
-            cur_node.set_next(temp)
+        tail = self.tail()
+        if tail is None:
+            self.head = Node(value, None, None)
         else:
-            temp = Node(value,None,None)
-            self.head = temp
+            tail.next = Node(value, tail, None)
         self.size_+=1
 
     # dunder method so that list[index] will return the node at that position also facilitates for x in list
@@ -75,7 +74,10 @@ class LinkedList:
             return None
         iter = self.begin()+(index) 
         return iter.get_node()
-    
+
+    def __iter__(self):
+        return self.begin()
+
     # dunder methat so that writing list[index] = value will actually change the value of the node at that position
     def __setitem__(self,index,val):
         iter = self.begin()+(index) 
@@ -117,10 +119,15 @@ class LinkedList:
     # returns the node at the front of the list
     def front(self):
         return self.head
-    
-    # returns the node at the end of the list
-    def back(self):
-        return self.end().get_node()
+
+    def tail(self) -> Node | None:
+        """returns the node at the end of the list"""
+        node = self.head
+        if node is None:
+            return None
+        while node.next:
+            node = node.next
+        return node
 
     # returns a boolean that is true if the list is empty
     def empty(self):
@@ -162,11 +169,7 @@ class LinkedList:
     # will return an iterator that points to the first node
     def begin(self):
         return ListIterator(self.head, self)
-    
-    # will return an iterator that points to the last node
-    def end(self):
-        return ListIterator(self.head, self)+(self.size_)
-    
+
     # given an iterator for the destination of the data (within the current list), an iterator that points to where the data should come from and the number of elements to be moved, this method will transfer the nodes to directly after the destination node cutting them from where they originally were
     def splice(self,dest, source, length):
         # if no length is entered it is autoatically set to 1
@@ -269,58 +272,21 @@ class LinkedList:
             iter+=1
         return temp
     
-class ListIterator:
+class ListIterator(Iterator):
     # constructor method for pointer/iterator that requires a starting node and the list it should be part of
     def __init__(self, node: Node, lst: LinkedList):
         self.node = node
         self.list = lst
 
-    # dunder method so that iterator+=number will correctly increment it with relation to the list
-    def __iadd__(self,other: int):
-        for i in range(other):
-            if self.node.prev!= None:
-                self.node = self.node.prev
-            else:
-                return None
-        return self
+    def __next__(self):
+        result = self.node
+        if result is None:
+            raise StopIteration
 
-    # dunder method so that iterator+number will return a new iterator incremented with relation to the list
-    def __add__(self,other:int):
-        temp = ListIterator(self.node, self.list)
-        for i in range(other):
-            if temp.get_node().prev!= None:
-                temp.node = temp.get_node().prev
-            else:
-                break
-        return temp
-    
-    # dunder method such that iterator-=number will decrement the iterator with respect to the list
-    def __isub__(self, other: int):
-        for i in range(other):
-            if self.node.prev != None:
-                self.node = self.node.prev
-            else:
-                return None
-        return self
+        next_node = result.next
+        self.node = next_node
+        return result.value
 
-    # dunder method such that iterator-number will return a new iterator that has been decremented with respect to the list
-    def __sub__(self, other: int):
-        temp = ListIterator(self.node, self.list)
-        for i in range(other):
-            if temp.get_node().prev != None:
-                temp.node = temp.get_node().prev
-            else:
-                break
-        return temp
-    
-    # returns the value of the iterator's node
-    def val(self): 
-        return self.node.value
-    
-    # returns the iterator's node
-    def get_node(self):
-        return self.node
-    
     # dunder method such that f"{listIterator}" will show the value of the node
     def __format__(self,format_specs):
         return f"{self.node.value}"
