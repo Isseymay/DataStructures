@@ -79,6 +79,18 @@ class LinkedList[T]:
             node = node.next
         node.value = val
 
+    def __delitem__(self, index: int):
+        if index >= self.size or index < -self.size:
+            raise IndexError
+        if index < 0:
+            index += self.size
+        node = self.head
+        for i in range(index):
+            node = node.next
+        node.prev.next = node.next
+        node.next.prev = node.prev
+        self.size -= 1
+
     # pops the first node out of the list (moves the head down by one value)
     def pop_front(self):
         self.head = self.head.prev
