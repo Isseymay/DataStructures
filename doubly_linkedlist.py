@@ -5,6 +5,7 @@ from collections.abc import Iterator
 from dataclasses import dataclass
 from collections.abc import MutableSequence
 
+
 @dataclass
 class Node[T]:
     # Node constructor that allows for a node to be created without a previous or next
@@ -12,18 +13,18 @@ class Node[T]:
     prev: Node[T] | None = None
     next: Node[T] | None = None
 
-    def __lt__(self,other):
+    def __lt__(self, other):
         return str(self.value) < str(other.value)
-    
-    def __gt__(self,other):
+
+    def __gt__(self, other):
         return str(self.value) > str(other.value)
-    
-    def __le__(self,other):
-        return str(self.value)<=str(other.value)
-    
-    def __ge__(self,other):
-        return str(self.value)>=str(other.value)
-    
+
+    def __le__(self, other):
+        return str(self.value) <= str(other.value)
+
+    def __ge__(self, other):
+        return str(self.value) >= str(other.value)
+
 
 # Class to actually make the linked list and all it's methods
 class LinkedList[T](MutableSequence[T]):
@@ -34,14 +35,14 @@ class LinkedList[T](MutableSequence[T]):
         self.head: Node | None = None
         """the head of the list starts at None but will be assigned a Node when nodes are added"""
 
-         # going through and pushing all values fron the initializing list
+        # going through and pushing all values fron the initializing list
         for val in initial:
             self.push(val)
 
     def push_front(self, value: T):
         """pushes a value to the front of the list"""
         old_head = self.head
-        self.head = Node(value,None,self.head)
+        self.head = Node(value, None, self.head)
         old_head.prev = self.head
         self.size += 1
 
@@ -52,7 +53,7 @@ class LinkedList[T](MutableSequence[T]):
             self.head = Node(value, None, None)
         else:
             tail.next = Node(value, tail, None)
-        self.size+=1
+        self.size += 1
 
     def __iter__(self) -> ListIterator[T]:
         return ListIterator(self.head)
@@ -68,7 +69,7 @@ class LinkedList[T](MutableSequence[T]):
             node = node.next
         return node.value
 
-    def __setitem__(self,index: int, val: T):
+    def __setitem__(self, index: int, val: T):
         """dunder method so that writing list[index] = value will actually change the value of the node at that position"""
         if index >= self.size or index < -self.size:
             raise IndexError
@@ -94,16 +95,16 @@ class LinkedList[T](MutableSequence[T]):
     # pops the first node out of the list (moves the head down by one value)
     def pop_front(self):
         self.head = self.head.prev
-        self.size-=1
+        self.size -= 1
 
     # pops the last value from the list (changes the second last node to go to None instead of the next node)
     def pop(self):
-        second_last = self.end()-1
+        second_last = self.end() - 1
         second_last.get_node().set_next(None)
-        self.size-=1
+        self.size -= 1
 
     # insert a value into the list at a specific positon (given either an index value or a list iterator) -- cannot insert to the end (pushes back the value currently in that spot)
-    def insert(self,value,pos):
+    def insert(self, value, pos):
         temp_node = None
         if type(pos) == int:
             temp_node = self.__getitem__(pos)
@@ -114,13 +115,13 @@ class LinkedList[T](MutableSequence[T]):
 
         try:
             prev_node = temp_node.prev
-            new_node = Node(value,prev_node,temp_node)
+            new_node = Node(value, prev_node, temp_node)
             temp_node.set_prev(new_node)
             if prev_node != None:
                 prev_node.set_next(new_node)
             else:
                 self.head = new_node
-            self.size+=1
+            self.size += 1
         except:
             print("There was an error inserting")
 
@@ -128,7 +129,7 @@ class LinkedList[T](MutableSequence[T]):
     def front(self):
         return self.head
 
-    def tail(self) -> Node[T] | None:
+    def tail(self):
         """returns the node at the end of the list"""
         node = self.head
         if node is None:
@@ -137,49 +138,49 @@ class LinkedList[T](MutableSequence[T]):
             node = node.next
         return node
 
-    # returns a boolean that is true if the list is empty
-    def empty(self):
-        return self.size==0
+    @property
+    def is_empty(self):
+        """returns a boolean that is true if the list is empty"""
+        return self.size == 0
 
     def __len__(self):
         return self.size
-    
+
     def __contains__(self, val: object):
         """dunder method such that if value in list will work accuately (value in list will return a boolean)"""
         for item in self:
             if item == val:
                 return True
         return False
-    
+
     # returns the index of the first version of that value or none if it's not there.
-    def index(self,val):
+    def index(self, val: object) -> int | None:
         iter = iter(self)
         for i in range(self.size):
             if iter.val() == val:
                 return i
-            iter+=1
+            iter += 1
         return None
-    
-    def find(self,val):
+
+    def find(self, val):
         iter = iter(self)
         for i in range(self.size - 1):
             if iter.val() == val:
                 return iter
-            iter+=1
+            iter += 1
         return None
 
     # given an iterator for the destination of the data (within the current list), an iterator that points to where the data should come from and the number of elements to be moved, this method will transfer the nodes to directly after the destination node cutting them from where they originally were
-    def splice(self,dest, source, length):
+    def splice(self, dest, source, length):
         # if no length is entered it is autoatically set to 1
         if length == None:
             length = 1
 
-
         # connecting the front of the splice section to the destination
-        if self.size==0:
+        if self.size == 0:
             self.head = source.get_node()
             source.get_node().set_prev(None)
-            end = source+length
+            end = source + length
             end.get_node().set_next(None)
             # end.get_node().Next.setPrev(end.get_node())
         else:
@@ -188,17 +189,16 @@ class LinkedList[T](MutableSequence[T]):
 
             # if dest isn't the last value in the list, the end of the splice section is connected to it
             temp_end = dest.get_node().prev
-            if temp_end!=None:
-                end = source+length
+            if temp_end != None:
+                end = source + length
                 end.get_node().set_next(temp_end)
                 end.get_node().prev.set_prev(end.get_node())
-        
 
         # disconnecting  the spliced section from it's original place
-        sourceEnd = (source+length).get_node().prev
+        sourceEnd = (source + length).get_node().prev
         if source.list.head == source.get_node():
-            source.list.head = (source+length).get_node().prev
-            if sourceEnd!=None:
+            source.list.head = (source + length).get_node().prev
+            if sourceEnd != None:
                 sourceEnd.set_prev(None)
         else:
             sourcePrev = source.get_node().prev
@@ -206,11 +206,11 @@ class LinkedList[T](MutableSequence[T]):
             sourceEnd.set_prev(sourcePrev)
 
         # updating the sizes of the lists that were affected
-        dest.list.size+=length
-        source.list.size-=length
+        dest.list.size += length
+        source.list.size -= length
 
     # deletes the first instance of a value from the list
-    def delete(self,value):
+    def delete(self, value):
         iter = self.begin()
         for i in range(self.size - 1):
             if iter.val() == value:
@@ -226,20 +226,20 @@ class LinkedList[T](MutableSequence[T]):
     def sort_list(self):
         passes = 1
         swapped = False
-        while passes<(self.size - 1):
+        while passes < (self.size - 1):
             i = 0
             j = 1
-            while j<(self.size):
+            while j < (self.size):
                 if self[i] > self[j]:
                     temp = self[i].value
                     self[i] = self[j].value
                     self[j] = temp
                     swapped = True
-                i+=1
-                j+=1
+                i += 1
+                j += 1
             if swapped == False:
                 break
-            passes+=1
+            passes += 1
 
     # using format dunder method so that string methods will look like a regular list
     def __str__(self):
@@ -253,8 +253,9 @@ class LinkedList[T](MutableSequence[T]):
         iter = self.begin()
         for i in range(self.size):
             temp.append(iter.val())
-            iter+=1
+            iter += 1
         return temp
+
 
 @dataclass
 class ListIterator[T](Iterator[T]):
