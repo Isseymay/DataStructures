@@ -29,8 +29,10 @@ class Node[T]:
 class LinkedList[T]:
     # constructor method that allows an initial list to be passed in to instantiate values
     def __init__(self, initial: list[T]):
-        self.size_ = 0 # stores the length of the list
-        self.head: Node | None = None # the head of the list starts at None but will be assigned a Node when nodes are added
+        self.size = 0
+        """stores the length of the list"""
+        self.head: Node | None = None
+        """the head of the list starts at None but will be assigned a Node when nodes are added"""
 
          # going through and pushing all values fron the initializing list
         for val in initial:
@@ -41,7 +43,7 @@ class LinkedList[T]:
         old_head = self.head
         self.head = Node(value,None,self.head)
         old_head.prev = self.head
-        self.size_ += 1
+        self.size += 1
 
     def push(self, value: T):
         """pushes a value to the end of the list"""
@@ -50,17 +52,17 @@ class LinkedList[T]:
             self.head = Node(value, None, None)
         else:
             tail.next = Node(value, tail, None)
-        self.size_+=1
+        self.size+=1
 
     def __iter__(self) -> ListIterator[T]:
         return ListIterator(self.head)
 
     def __getitem__(self, index: int) -> T:
         """dunder method so that list[index] will return the node at that position also facilitates for x in list"""
-        if index >= self.size_ or index < -self.size_:
+        if index >= self.size or index < -self.size:
             raise IndexError
         if index < 0:
-            index += self.size_
+            index += self.size
         node = self.head
         for i in range(index):
             node = node.next
@@ -68,10 +70,10 @@ class LinkedList[T]:
 
     def __setitem__(self,index: int, val: T):
         """dunder method so that writing list[index] = value will actually change the value of the node at that position"""
-        if index >= self.size_ or index < -self.size_:
+        if index >= self.size or index < -self.size:
             raise IndexError
         if index < 0:
-            index += self.size_
+            index += self.size
         node = self.head
         for i in range(index):
             node = node.next
@@ -80,13 +82,13 @@ class LinkedList[T]:
     # pops the first node out of the list (moves the head down by one value)
     def pop_front(self):
         self.head = self.head.prev
-        self.size_-=1
+        self.size-=1
 
     # pops the last value from the list (changes the second last node to go to None instead of the next node)
     def pop(self):
         second_last = self.end()-1
         second_last.get_node().set_next(None)
-        self.size_-=1
+        self.size-=1
 
     # insert a value into the list at a specific positon (given either an index value or a list iterator) -- cannot insert to the end (pushes back the value currently in that spot)
     def insert(self,value,pos):
@@ -106,7 +108,7 @@ class LinkedList[T]:
                 prev_node.set_next(new_node)
             else:
                 self.head = new_node
-            self.size_+=1       
+            self.size+=1
         except:
             print("There was an error inserting")
 
@@ -125,19 +127,15 @@ class LinkedList[T]:
 
     # returns a boolean that is true if the list is empty
     def empty(self):
-        return self.size_==0
-    
-    # returns the size of the list
-    def size(self):
-        return self.size_
-    
+        return self.size==0
+
     def __len__(self):
-        return self.size_
+        return self.size
     
     # dunder method such that if value in list will work accuately (value in list will return a boolean)
     def __contains__(self,val):
         iter = iter(self)
-        for i in range(self.size_):
+        for i in range(self.size):
             if iter.val() == val:
                 return True
             iter+=1
@@ -146,7 +144,7 @@ class LinkedList[T]:
     # returns the index of the first version of that value or none if it's not there.
     def index(self,val):
         iter = iter(self)
-        for i in range(self.size_):
+        for i in range(self.size):
             if iter.val() == val:
                 return i
             iter+=1
@@ -154,7 +152,7 @@ class LinkedList[T]:
     
     def find(self,val):
         iter = iter(self)
-        for i in range(self.size_-1):
+        for i in range(self.size - 1):
             if iter.val() == val:
                 return iter
             iter+=1
@@ -168,7 +166,7 @@ class LinkedList[T]:
 
 
         # connecting the front of the splice section to the destination
-        if self.size_==0:
+        if self.size==0:
             self.head = source.get_node()
             source.get_node().set_prev(None)
             end = source+length
@@ -198,13 +196,13 @@ class LinkedList[T]:
             sourceEnd.set_prev(sourcePrev)
 
         # updating the sizes of the lists that were affected
-        dest.list.size_+=length
-        source.list.size_-=length
+        dest.list.size+=length
+        source.list.size-=length
 
     # deletes the first instance of a value from the list
     def delete(self,value):
         iter = self.begin()
-        for i in range(self.size_-1):
+        for i in range(self.size - 1):
             if iter.val() == value:
                 if iter.get_node().prev != None:
                     prev = iter.get_node().prev
@@ -218,10 +216,10 @@ class LinkedList[T]:
     def sort_list(self):
         passes = 1
         swapped = False
-        while passes<(self.size_-1):
+        while passes<(self.size - 1):
             i = 0
             j = 1
-            while j<(self.size_):
+            while j<(self.size):
                 if self[i] > self[j]:
                     temp = self[i].value
                     self[i] = self[j].value
@@ -239,16 +237,16 @@ class LinkedList[T]:
     def __format__(self,format_specs):
         out = f"["
         
-        if self.size_>0:
+        if self.size>0:
             iter = self.begin()
             # print(f"======{iter}")
             out+=f"{iter.val()}"
-            for i in range(self.size_-1):
+            for i in range(self.size - 1):
                 iter+=1
                 # if iter is not None:
                 #     print(f"======={iter}")
                 # print(i, iter, self.size_)
-                if (i<(self.size_-1)):
+                if (i<(self.size - 1)):
                     out+=", "
                 out+=f"{iter.val()}"  
         out+="]"
@@ -257,7 +255,7 @@ class LinkedList[T]:
     def convert_to_list(self):
         temp = []
         iter = self.begin()
-        for i in range(self.size_):
+        for i in range(self.size):
             temp.append(iter.val())
             iter+=1
         return temp

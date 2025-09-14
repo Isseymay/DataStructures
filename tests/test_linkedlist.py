@@ -35,9 +35,17 @@ def test_iter():
     with raises(StopIteration):
         next(list_iter)
 
+def test_push(ll: LinkedList[int]):
+    ll.push(4)
+
+    assert ll.size == 4
+    assert ll.tail().value == 4
 
 def test_push_front(ll: LinkedList[int]):
     ll.push_front(0)
+
+    assert ll.size == 4
+
     head = ll.head
     assert head.value == 0
     assert head.prev is None
