@@ -132,13 +132,11 @@ class LinkedList[T]:
     def __len__(self):
         return self.size
     
-    # dunder method such that if value in list will work accuately (value in list will return a boolean)
-    def __contains__(self,val):
-        iter = iter(self)
-        for i in range(self.size):
-            if iter.val() == val:
+    def __contains__(self, val: object):
+        """dunder method such that if value in list will work accuately (value in list will return a boolean)"""
+        for item in self:
+            if item == val:
                 return True
-            iter+=1
         return False
     
     # returns the index of the first version of that value or none if it's not there.

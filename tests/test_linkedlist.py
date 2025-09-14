@@ -86,3 +86,9 @@ def test_setitem(ll: LinkedList[int]):
 
     with raises(IndexError):
         ll[-4] = 4
+
+
+def test_contains(ll: LinkedList[int]):
+    assert 1 in ll
+    assert 4 not in ll
+    assert None not in ll
