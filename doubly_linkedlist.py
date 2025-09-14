@@ -6,9 +6,9 @@ from dataclasses import dataclass
 
 
 @dataclass
-class Node:
+class Node[T]:
     # Node constructor that allows for a node to be created without a previous or next
-    value: object
+    value: T
     prev: Node[T] | None = None
     next: Node[T] | None = None
 
