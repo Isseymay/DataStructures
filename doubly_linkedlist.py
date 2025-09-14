@@ -1,34 +1,17 @@
 # Node class to make the nodes that make up the doubly linked list (therefore need to store both the previous and future nodes)
+from __future__ import annotations
+
 from collections.abc import Iterator
+from dataclasses import dataclass
 
 
+@dataclass
 class Node:
     # Node constructor that allows for a node to be created without a previous or next
-    def __init__(self, value, prev, next_):
-        self.value = value
-        self.prev: Node | None = None
-        self.next: Node | None = None
-        if (prev!=None):
-            self.prev = prev
-        if (next_!=None):
-            self.next = next_
+    value: object
+    prev: Node[T] | None = None
+    next: Node[T] | None = None
 
-    # set the previous node 
-    def set_prev(self, prev):
-        self.prev = prev
-
-    # set the node's value (the node must always have a value but this allows it to be changed)
-    def set_val(self, val):
-        self.value = val
-
-    # set the next node
-    def set_next(self, next_):
-        self.prev = next_
-
-    # make it so that when a node is used in an f-string it will only use it's value (for readability)
-    def __format__(self,format_specs):
-        return f"{self.value}"
-    
     def __lt__(self,other):
         return str(self.value) < str(other.value)
     
