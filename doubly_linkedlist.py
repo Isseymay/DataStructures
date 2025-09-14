@@ -59,8 +59,8 @@ class LinkedList[T]:
         iter = self.begin()+(index) 
         return iter.get_node()
 
-    def __iter__(self):
-        return self.begin()
+    def __iter__(self) -> ListIterator[T]:
+        return ListIterator(self.head)
 
     # dunder methat so that writing list[index] = value will actually change the value of the node at that position
     def __setitem__(self,index,val):
@@ -126,7 +126,7 @@ class LinkedList[T]:
     
     # dunder method such that if value in list will work accuately (value in list will return a boolean)
     def __contains__(self,val):
-        iter = self.begin()
+        iter = iter(self)
         for i in range(self.size_):
             if iter.val() == val:
                 return True
@@ -135,7 +135,7 @@ class LinkedList[T]:
     
     # returns the index of the first version of that value or none if it's not there.
     def index(self,val):
-        iter = self.begin()
+        iter = iter(self)
         for i in range(self.size_):
             if iter.val() == val:
                 return i
@@ -143,16 +143,12 @@ class LinkedList[T]:
         return None
     
     def find(self,val):
-        iter = self.begin()
+        iter = iter(self)
         for i in range(self.size_-1):
             if iter.val() == val:
                 return iter
             iter+=1
         return None
-    
-    # will return an iterator that points to the first node
-    def begin(self):
-        return ListIterator(self.head, self)
 
     # given an iterator for the destination of the data (within the current list), an iterator that points to where the data should come from and the number of elements to be moved, this method will transfer the nodes to directly after the destination node cutting them from where they originally were
     def splice(self,dest, source, length):
@@ -255,12 +251,10 @@ class LinkedList[T]:
             temp.append(iter.val())
             iter+=1
         return temp
-    
+
+@dataclass
 class ListIterator[T](Iterator[T]):
-    # constructor method for pointer/iterator that requires a starting node and the list it should be part of
-    def __init__(self, node: Node[T], lst: LinkedList[T]):
-        self.node = node
-        self.list = lst
+    node: Node[T]
 
     def __next__(self) -> T:
         result = self.node
@@ -270,8 +264,3 @@ class ListIterator[T](Iterator[T]):
         next_node = result.next
         self.node = next_node
         return result.value
-
-    # dunder method such that f"{listIterator}" will show the value of the node
-    def __format__(self,format_specs):
-        return f"{self.node.value}"
-    
