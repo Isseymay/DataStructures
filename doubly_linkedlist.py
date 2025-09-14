@@ -52,20 +52,30 @@ class LinkedList[T]:
             tail.next = Node(value, tail, None)
         self.size_+=1
 
-    # dunder method so that list[index] will return the node at that position also facilitates for x in list
-    def __getitem__(self,index):
-        if index > self.size_:
-            return None
-        iter = self.begin()+(index) 
-        return iter.get_node()
-
     def __iter__(self) -> ListIterator[T]:
         return ListIterator(self.head)
 
-    # dunder methat so that writing list[index] = value will actually change the value of the node at that position
-    def __setitem__(self,index,val):
-        iter = self.begin()+(index) 
-        iter.get_node().set_val(val)
+    def __getitem__(self, index: int) -> T:
+        """dunder method so that list[index] will return the node at that position also facilitates for x in list"""
+        if index >= self.size_ or index < -self.size_:
+            raise IndexError
+        if index < 0:
+            index += self.size_
+        node = self.head
+        for i in range(index):
+            node = node.next
+        return node.value
+
+    def __setitem__(self,index: int, val: T):
+        """dunder method so that writing list[index] = value will actually change the value of the node at that position"""
+        if index >= self.size_ or index < -self.size_:
+            raise IndexError
+        if index < 0:
+            index += self.size_
+        node = self.head
+        for i in range(index):
+            node = node.next
+        node.value = val
 
     # pops the first node out of the list (moves the head down by one value)
     def pop_front(self):

@@ -2,9 +2,11 @@ from pytest import raises, fixture
 
 from doubly_linkedlist import LinkedList, ListIterator
 
+
 @fixture
 def ll() -> LinkedList[int]:
     return LinkedList([1, 2, 3])
+
 
 def test_init():
     value = LinkedList([1, 2, 3])
@@ -20,6 +22,7 @@ def test_init():
     assert last_node.value == 3
     assert last_node.next is None
     assert last_node.prev is next_node
+
 
 def test_iter():
     value = LinkedList([1, 2, 3])
@@ -41,3 +44,37 @@ def test_push_front(ll: LinkedList[int]):
     next_node = head.next
     assert next_node.value == 1
     assert next_node.prev is head
+
+
+def test_getitem(ll: LinkedList[int]):
+    assert ll[0] == 1
+    assert ll[1] == 2
+    assert ll[2] == 3
+
+    with raises(IndexError):
+        _ = ll[3]
+
+    assert ll[-1] == 3
+    assert ll[-2] == 2
+    assert ll[-3] == 1
+
+    with raises(IndexError):
+        _ = ll[-4]
+
+
+def test_setitem(ll: LinkedList[int]):
+    ll[1] = 7
+    assert ll[0] == 1
+    assert ll[1] == 7
+    assert ll[2] == 3
+
+    with raises(IndexError):
+        ll[3] = 4
+
+    ll[-2] = 6
+    assert ll[0] == 1
+    assert ll[1] == 6
+    assert ll[2] == 3
+
+    with raises(IndexError):
+        ll[-4] = 4
