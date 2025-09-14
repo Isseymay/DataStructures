@@ -241,27 +241,13 @@ class LinkedList[T](MutableSequence[T]):
                 break
             passes+=1
 
+    # using format dunder method so that string methods will look like a regular list
+    def __str__(self):
+        return "[" + ", ".join(map(str, self)) + "]"
 
+    def __repr__(self):
+        return "LinkedList([" + ", ".join(map(repr, self)) + "])"
 
-    # using format dunder method so that f"{linkedList}" will look like a regular list
-    def __format__(self,format_specs):
-        out = f"["
-        
-        if self.size>0:
-            iter = self.begin()
-            # print(f"======{iter}")
-            out+=f"{iter.val()}"
-            for i in range(self.size - 1):
-                iter+=1
-                # if iter is not None:
-                #     print(f"======={iter}")
-                # print(i, iter, self.size_)
-                if (i<(self.size - 1)):
-                    out+=", "
-                out+=f"{iter.val()}"  
-        out+="]"
-        return out
-    
     def convert_to_list(self):
         temp = []
         iter = self.begin()

@@ -98,3 +98,9 @@ def test_contains(ll: LinkedList[int]):
     assert 1 in ll
     assert 4 not in ll
     assert None not in ll
+
+
+def test_stringification(ll: LinkedList[int]):
+    assert repr(ll) == "LinkedList([1, 2, 3])"
+    assert str(ll) == "[1, 2, 3]"
+    assert format(ll) == "[1, 2, 3]"
