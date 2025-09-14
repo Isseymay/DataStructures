@@ -1,4 +1,7 @@
-from doubly_linkedlist import LinkedList
+from pytest import raises
+
+from doubly_linkedlist import LinkedList, ListIterator
+
 
 def test_init():
     value = LinkedList([1, 2, 3])
@@ -14,3 +17,14 @@ def test_init():
     assert last_node.value == 3
     assert last_node.next is None
     assert last_node.prev is next_node
+
+def test_iter():
+    value = LinkedList([1, 2, 3])
+    list_iter = iter(value)
+    assert isinstance(list_iter, ListIterator)
+    assert next(list_iter) == 1
+    assert next(list_iter) == 2
+    assert next(list_iter) == 3
+
+    with raises(StopIteration):
+        next(list_iter)
