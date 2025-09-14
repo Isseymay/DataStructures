@@ -26,9 +26,9 @@ class Node[T]:
     
 
 # Class to actually make the linked list and all it's methods
-class LinkedList:
+class LinkedList[T]:
     # constructor method that allows an initial list to be passed in to instantiate values
-    def __init__(self, initial: list):
+    def __init__(self, initial: list[T]):
         self.size_ = 0 # stores the length of the list
         self.head: Node | None = None # the head of the list starts at None but will be assigned a Node when nodes are added
 
@@ -36,14 +36,14 @@ class LinkedList:
         for val in initial:
             self.push(val)
 
-    def push_front(self, value: object):
+    def push_front(self, value: T):
         """pushes a value to the front of the list"""
         old_head = self.head
         self.head = Node(value,None,self.head)
         old_head.prev = self.head
         self.size_ += 1
 
-    def push(self, value):
+    def push(self, value: T):
         """pushes a value to the end of the list"""
         tail = self.tail()
         if tail is None:
@@ -104,7 +104,7 @@ class LinkedList:
     def front(self):
         return self.head
 
-    def tail(self) -> Node | None:
+    def tail(self) -> Node[T] | None:
         """returns the node at the end of the list"""
         node = self.head
         if node is None:
@@ -256,13 +256,13 @@ class LinkedList:
             iter+=1
         return temp
     
-class ListIterator(Iterator):
+class ListIterator[T](Iterator[T]):
     # constructor method for pointer/iterator that requires a starting node and the list it should be part of
-    def __init__(self, node: Node, lst: LinkedList):
+    def __init__(self, node: Node[T], lst: LinkedList[T]):
         self.node = node
         self.list = lst
 
-    def __next__(self):
+    def __next__(self) -> T:
         result = self.node
         if result is None:
             raise StopIteration

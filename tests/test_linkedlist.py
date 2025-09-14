@@ -3,7 +3,7 @@ from pytest import raises, fixture
 from doubly_linkedlist import LinkedList, ListIterator
 
 @fixture
-def ll():
+def ll() -> LinkedList[int]:
     return LinkedList([1, 2, 3])
 
 def test_init():
@@ -33,7 +33,7 @@ def test_iter():
         next(list_iter)
 
 
-def test_push_front(ll: LinkedList):
+def test_push_front(ll: LinkedList[int]):
     ll.push_front(0)
     head = ll.head
     assert head.value == 0
