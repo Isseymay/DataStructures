@@ -36,14 +36,15 @@ class LinkedList:
         for val in initial:
             self.push(val)
 
-    # pushes a value to the front of the list
-    def push_front(self, value):
-        temp = Node(value,None,self.head)
-        self.head = temp
-        self.size_+=1
+    def push_front(self, value: object):
+        """pushes a value to the front of the list"""
+        old_head = self.head
+        self.head = Node(value,None,self.head)
+        old_head.prev = self.head
+        self.size_ += 1
 
-    # pushes a value to the end of the list
-    def push(self,value):
+    def push(self, value):
+        """pushes a value to the end of the list"""
         tail = self.tail()
         if tail is None:
             self.head = Node(value, None, None)

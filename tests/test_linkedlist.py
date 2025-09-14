@@ -1,7 +1,10 @@
-from pytest import raises
+from pytest import raises, fixture
 
 from doubly_linkedlist import LinkedList, ListIterator
 
+@fixture
+def ll():
+    return LinkedList([1, 2, 3])
 
 def test_init():
     value = LinkedList([1, 2, 3])
@@ -28,3 +31,13 @@ def test_iter():
 
     with raises(StopIteration):
         next(list_iter)
+
+
+def test_push_front(ll: LinkedList):
+    ll.push_front(0)
+    head = ll.head
+    assert head.value == 0
+    assert head.prev is None
+    next_node = head.next
+    assert next_node.value == 1
+    assert next_node.prev is head
