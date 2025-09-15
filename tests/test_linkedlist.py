@@ -35,11 +35,13 @@ def test_iter():
     with raises(StopIteration):
         next(list_iter)
 
+
 def test_push(ll: LinkedList[int]):
     ll.push(4)
 
     assert ll.size == 4
     assert ll.tail().value == 4
+
 
 def test_push_front(ll: LinkedList[int]):
     ll.push_front(0)
@@ -86,6 +88,7 @@ def test_setitem(ll: LinkedList[int]):
 
     with raises(IndexError):
         ll[-4] = 4
+
 
 def test_delitem(ll: LinkedList[int]):
     del ll[1]

@@ -158,21 +158,17 @@ class LinkedList[T](MutableSequence[T]):
                 return True
         return False
 
-    # returns the index of the first version of that value or none if it's not there.
-    def index(self, val: object) -> int | None:
-        iter = iter(self)
-        for i in range(self.size):
-            if iter.val() == val:
+    def index(self, val: object):
+        """returns the index of the first version of that value or none if it's not there."""
+        for i, element in enumerate(self):
+            if element == val:
                 return i
-            iter += 1
         return None
 
     def find(self, val):
-        iter = iter(self)
-        for i in range(self.size - 1):
-            if iter.val() == val:
-                return iter
-            iter += 1
+        for element in self:
+            if element == val:
+                return element
         return None
 
     # given an iterator for the destination of the data (within the current list), an iterator that points to where the data should come from and the number of elements to be moved, this method will transfer the nodes to directly after the destination node cutting them from where they originally were
