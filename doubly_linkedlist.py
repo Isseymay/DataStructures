@@ -94,14 +94,19 @@ class LinkedList[T](MutableSequence[T]):
 
     # pops the first node out of the list (moves the head down by one value)
     def pop_front(self):
-        self.head = self.head.prev
+        self.head = self.head.next
+        self.head.prev = None
         self.size -= 1
 
     # pops the last value from the list (changes the second last node to go to None instead of the next node)
     def pop(self):
-        second_last = self.end() - 1
-        second_last.get_node().set_next(None)
+        tail = self.tail()
+        if not tail:
+            raise IndexError
+        second_last = tail.prev
+        second_last.next = None
         self.size -= 1
+        return tail.value
 
     # insert a value into the list at a specific positon (given either an index value or a list iterator) -- cannot insert to the end (pushes back the value currently in that spot)
     def insert(self, value, pos):
@@ -209,18 +214,19 @@ class LinkedList[T](MutableSequence[T]):
         dest.list.size += length
         source.list.size -= length
 
-    # deletes the first instance of a value from the list
-    def delete(self, value):
-        iter = self.begin()
-        for i in range(self.size - 1):
-            if iter.val() == value:
-                if iter.get_node().prev != None:
-                    prev = iter.get_node().prev
-                    prev.set_next(iter.get_node().prev)
-                if iter.get_node().prev != None:
-                    next = iter.get_node().prev
-                    next.set_prev(iter.get_node().prev)
-                break
+    def delete(self, value: object):
+        """deletes the first instance of a value from the list"""
+        node = self.head
+        while node.next:
+            if node.value != value:
+                node = node.next
+                continue
+            if node.prev is not None:
+                node.prev.next = node.next
+            if node.next is not None:
+                node.next.prev = node.prev
+            self.size -= 1
+            return
 
     # bubble sort bc I said so
     def sort_list(self):
@@ -229,7 +235,7 @@ class LinkedList[T](MutableSequence[T]):
         while passes < (self.size - 1):
             i = 0
             j = 1
-            while j < (self.size):
+            while j < self.size:
                 if self[i] > self[j]:
                     temp = self[i].value
                     self[i] = self[j].value
@@ -237,16 +243,16 @@ class LinkedList[T](MutableSequence[T]):
                     swapped = True
                 i += 1
                 j += 1
-            if swapped == False:
+            if not swapped:
                 break
             passes += 1
 
     # using format dunder method so that string methods will look like a regular list
     def __str__(self):
-        return "[" + ", ".join(map(str, self)) + "]"
+        return "[" + ", ".join(map(repr, self)) + "]"
 
     def __repr__(self):
-        return "LinkedList([" + ", ".join(map(repr, self)) + "])"
+        return "LinkedList(" + str(self) + ")"
 
     def convert_to_list(self):
         temp = []

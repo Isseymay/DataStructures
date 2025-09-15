@@ -104,3 +104,22 @@ def test_stringification(ll: LinkedList[int]):
     assert repr(ll) == "LinkedList([1, 2, 3])"
     assert str(ll) == "[1, 2, 3]"
     assert format(ll) == "[1, 2, 3]"
+
+
+def test_pop(ll: LinkedList[int]):
+    assert ll.pop() == 3
+    assert ll.size == 2
+    assert ll[0] == 1
+    assert ll[1] == 2
+
+
+def test_delete(ll: LinkedList[int]):
+    ll.delete(2)
+    assert ll.size == 2
+    assert ll[0] == 1
+    assert ll[1] == 3
+
+    ll.delete(7)
+    assert ll.size == 2
+    assert ll[0] == 1
+    assert ll[1] == 3
