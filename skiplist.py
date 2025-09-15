@@ -364,7 +364,7 @@ class SkipListIterator[T]:
 
     # dunder method such that iterator-number will return a new iterator that has been decremented with respect to the current lane of the skip list
     def __sub__(self, other: int):
-        temp = ListIterator(self.node, self.list)
+        temp = ListIterator(self.node)
         for i in range(other):
             if temp.node.prev is not None:
                 temp.node = temp.node.prev

@@ -1,4 +1,7 @@
 import copy
+from collections.abc import Iterable, Iterator, MutableSet
+from typing import override
+
 from doubly_linkedlist import LinkedList, ListIterator
 
 sizes = [
@@ -23,26 +26,19 @@ sizes = [
 ]
 
 
-class HashSet:
-    def __init__(self, initial):
-        self.buckets = [None]
-        self.keys = None
-        self.maxLoadFactor_ = 2
-        self.numBucketsPos = 0
+class HashSet[T](MutableSet[T]):
+    def __init__(self, initial: Iterable[T]):
+        self.buckets: list[ListIterator[T] | None] = [None]
+        self.keys = LinkedList[T]([])
+        self.max_load_factor = 2
+        self.num_buckets_pos = 0
 
-        if len(initial) > 0:
-            for val in initial:
-                self.insert(val)
+        for val in initial:
+            self.insert(val)
 
-    def bucket(self, value):
+    def bucket(self, value: object):
         hashed = hash(value)
         return hashed % len(self.buckets)
-
-    def begin(self):
-        return self.keys.begin()
-
-    def end(self):
-        return self.keys.end()
 
     def __format__(self, format_specs):
         if format_specs == "ll":
@@ -58,59 +54,58 @@ class HashSet:
             out = ""
             for i in range(len(self.buckets)):
                 out += f"{i}: "
-                iter = copy.copy(self.buckets[i])
-                while iter is not None and self.bucket(iter.val()) == i:
-                    out += f"{iter.get_node()}, "
-                    iter += 1
+                list_iterator = ListIterator(self.buckets[i].node)
+                while (
+                    list_iterator is not None
+                    and self.bucket(list_iterator.node.value) == i
+                ):
+                    out += f"{list_iterator.node}, "
+                    next(list_iterator)
                 out += "\n"
             out += "\n"
             return out
 
-    def insert(self, value):
-        if self.keys is None:
-            self.keys = LinkedList([])
-        if value not in self.keys:
-            hashed = self.bucket(value)
-            if self.buckets[hashed] is None:
-                self.keys.push(value)
-                self.buckets[hashed] = self.keys.end()
-            else:
-                self.keys.insert(value, self.buckets[hashed])
-            if self.load_factor() > self.maxLoadFactor_:
-                self.rehash(len(self.buckets))
+    def insert(self, value: T):
+        if value in self.keys:
+            return
+        hashed = self.bucket(value)
+        if self.buckets[hashed] is None:
+            self.keys.push(value)
+            self.buckets[hashed] = iter(self.keys).move_to_end()
+        else:
+            self.keys.insert(value, self.buckets[hashed])
+        if self.load_factor() > self.max_load_factor:
+            self.rehash(len(self.buckets))
 
     def load_factor(self):
         return len(self.keys) / len(self.buckets)
 
-    def max_load_factor(self):
-        return self.maxLoadFactor_
-
     def set_max_load(self, value):
-        self.maxLoadFactor_ = value
-        if self.load_factor() > self.maxLoadFactor_:
+        self.max_load_factor = value
+        if self.load_factor() > self.max_load_factor:
             self.rehash(len(self.buckets))
 
     def size(self):
-        return self.keys.size()
+        return len(self.keys)
 
     def empty(self):
-        return self.keys.size() == 0
+        return len(self.keys) == 0
 
     def bucket_count(self):
         return len(self.buckets)
 
     def bucket_size(self, pos):
         if pos < len(self.buckets):
-            iter = self.buckets[pos]
+            list_iterator = self.buckets[pos]
             count = 0
-            ogHash = self.bucket(iter.val())
-            while iter.get_node().prev is not None:
-                if self.bucket(iter.val()) != ogHash:
+            og_hash = self.bucket(list_iterator.value)
+            while list_iterator.node.prev is not None:
+                if self.bucket(list_iterator.value) != og_hash:
                     break
                 count += 1
-                iter += 1
-            if iter.get_node().prev is None:
-                if self.bucket(iter.val()) == ogHash:
+                next(list_iterator)
+            if list_iterator.node.prev is None:
+                if self.bucket(list_iterator.value) == og_hash:
                     count += 1
             return count
         return 0
@@ -119,16 +114,16 @@ class HashSet:
     def __contains__(self, value):
         hashed = self.bucket(value)
         iter = self.buckets[hashed]
-        while iter.get_node().prev is not None:
-            if iter.val() == value:
+        while iter.node.prev is not None:
+            if iter.value == value:
                 return True
 
-            if self.bucket(iter.val()) != hashed:
+            if self.bucket(iter.value) != hashed:
                 break
 
             iter += 1
 
-        if iter.get_node().prev is None and iter.val() == value:
+        if iter.node.prev is None and iter.value == value:
             return True
         return False
 
@@ -136,16 +131,16 @@ class HashSet:
     def find(self, value):
         hashed = self.bucket(value)
         iter = self.buckets[hashed]
-        while iter.get_node().prev is not None:
-            if iter.val() == value:
+        while iter.node.prev is not None:
+            if iter.value == value:
                 return iter
 
-            if self.bucket(iter.val()) != hashed:
+            if self.bucket(iter.value) != hashed:
                 break
 
             iter += 1
 
-        if iter.get_node().prev is None and iter.val() == value:
+        if iter.node.prev is None and iter.value == value:
             return iter
         return None
 
@@ -154,40 +149,57 @@ class HashSet:
         if isinstance(val, int):
             value = val
         elif isinstance(val, ListIterator):
-            value = val.val()
+            value = val.value
 
         self.keys.delete(value)
 
-    def rehash(self, newSize):
-        if newSize > len(self.buckets) or self.load_factor() > self.maxLoadFactor_:
-            curSize = len(self.buckets)
-            curLoad = self.load_factor()
-            for i in range(self.numBucketsPos + 1, len(sizes)):
-                curSize = sizes[i]
-                curLoad = len(self.keys) / curSize
-                if curSize >= newSize and curLoad <= self.maxLoadFactor_:
+    def rehash(self, new_size):
+        if new_size > len(self.buckets) or self.load_factor() > self.max_load_factor:
+            cur_size = len(self.buckets)
+            cur_load = self.load_factor()
+            i = 0
+            for i in range(self.num_buckets_pos + 1, len(sizes)):
+                cur_size = sizes[i]
+                cur_load = len(self.keys) / cur_size
+                if cur_size >= new_size and cur_load <= self.max_load_factor:
                     break
 
-            self.numBucketsPos = i
-            self.buckets = [None] * curSize
+            self.num_buckets_pos = i
+            self.buckets = [None] * cur_size
 
             self.splicing()
 
     def splicing(self):
-        temp = LinkedList([])
-        temp.splice(temp.begin(), self.keys.begin(), self.keys.size())
-        length = temp.size()
-        cur = temp.begin()
-        old = temp.begin()
+        temp = LinkedList[T]([])
+        temp.splice(iter(temp), iter(self.keys), self.keys.size)
+        length = temp.size
+        cur = iter(temp)
+        old = iter(temp)
         for i in range(length):
-            key = cur.val()
+            key = cur.value
             hashed = self.bucket(key)
             dest = self.buckets[hashed]
             old += 1
             if dest is not None:
-                self.keys.splice(dest, temp, cur)
+                self.keys.splice(dest, iter(temp), cur)
                 self.buckets[hashed] = dest - 1
             else:
                 self.keys.push(key)
-                self.buckets[hashed] = self.keys.end()
+                self.buckets[hashed] = iter(self.keys).move_to_end()
             cur = copy.copy(old)
+
+    @override
+    def __iter__(self) -> Iterator[T]:
+        return iter(self.keys)
+
+    @override
+    def __len__(self):
+        return self.size()
+
+    @override
+    def add(self, value: T):
+        self.insert(value)
+
+    @override
+    def discard(self, value: object):
+        self.erase(value)
