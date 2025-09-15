@@ -1,5 +1,6 @@
 import random
 
+from doubly_linkedlist import LinkedList
 from skiplist import SkipList
 from pytest import fixture
 
@@ -14,6 +15,14 @@ def sl():
 
 def test_init():
     value = SkipList(2, [1, 2])
+    base = value.base
+    assert base.head.value == 1
+    assert base.head.next.value == 2
+    assert base.head.next.next is None
+
+
+def test_init_linkedlist():
+    value = SkipList(2, LinkedList([1, 2]))
     base = value.base
     assert base.head.value == 1
     assert base.head.next.value == 2

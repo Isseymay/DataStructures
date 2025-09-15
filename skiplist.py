@@ -29,39 +29,24 @@ class SkipList[T]:
         for i in range(height):
             self.lanes.append(LinkedList([]))
 
-        # if initial is a linked list - using the linked list to work initial values into the skip list
-        if isinstance(initial, LinkedList):
-            initial.sort_list()  # has to be sorted
-            for i in range(len(initial)):
-                base = initial[i].val()
-                cur_val = initial[i]
-                level = 1
-                raised = random.choice([True, False])
-                self.lanes[-1].push(base)
-                while level < (height) and raised == True:
-                    temp = SkipListIterator(cur_val, base, self.lanes[-level])
-                    level += 1
-                    self.lanes[-level].push(temp)
-                    cur_val = self.lanes[-level].tail()
-                    raised = random.choice([True, False])
 
         # if initial is a list - using the list to work initial values into the skip list
-        elif isinstance(initial, list):
-            # this could be done in a better way but this will work for now.
-            initial.sort()
+        if isinstance(initial, list):
             initial = LinkedList(initial)
-            for i in range(len(initial)):
-                base = initial[i]
-                cur_val = initial[i]
-                self.lanes[-1].push(base)
+
+        initial.sort_list()  # has to be sorted
+        for i in range(len(initial)):
+            base = initial[i]
+            cur_val = initial[i]
+            level = 1
+            raised = random.choice([True, False])
+            self.lanes[-1].push(base)
+            while level < height and raised == True:
+                level += 1
+                self.lanes[-level].push(cur_val)
+                cur_val = self.lanes[-level].tail().value
                 raised = random.choice([True, False])
-                level = 1  # the current level (starting with 1) the number is up to so that it can be used to move backwards through the lanes list
-                while level < height and raised == True:
-                    # getting the skipListIterator of the current lane to put as the element in the lane one step upwards
-                    level += 1  # adding to level so it is now referring to the lane one step up
-                    self.lanes[-level].push(cur_val)
-                    cur_val = self.lanes[-level].tail()
-                    raised = random.choice([True, False])
+
 
     def __repr__(self):
         return f"SkipList({self.size_}, {self.base})"
