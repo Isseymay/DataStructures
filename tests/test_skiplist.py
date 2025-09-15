@@ -14,7 +14,7 @@ def sl():
 
 def test_init():
     value = SkipList(2, [1, 2])
-    base = value.base()
+    base = value.base
     assert base.head.value == 1
     assert base.head.next.value == 2
     assert base.head.next.next is None

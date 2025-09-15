@@ -42,7 +42,7 @@ class SkipList[T]:
                     temp = SkipListIterator(cur_val, base, self.lanes[-level])
                     level += 1
                     self.lanes[-level].push(temp)
-                    cur_val = self.lanes[-level].back()
+                    cur_val = self.lanes[-level].tail()
                     raised = random.choice([True, False])
 
         # if initial is a list - using the list to work initial values into the skip list
@@ -64,10 +64,10 @@ class SkipList[T]:
                     raised = random.choice([True, False])
 
     def __repr__(self):
-        return f"SkipList({self.size_}, {self.base()})"
+        return f"SkipList({self.size_}, {self.base})"
 
     def __str__(self):
-        return str(self.base())
+        return str(self.base)
 
     # making it so that the skip list will print in various formats
     def __format__(self, format_specs: Literal["ll", "b", ""]):
@@ -81,7 +81,7 @@ class SkipList[T]:
         elif format_specs == "b":
             # only printing the base list e.g.
             #    [1, 2, 3, 4, 5, 6, 7, 8]
-            return format(self.base())
+            return format(self.base)
 
         # printing in the form of a skip list e.g.
         #     1  .  .  .  .  .  .  .
@@ -93,11 +93,11 @@ class SkipList[T]:
         # is buggy (will run into issues if there's repeat numbers)
         out = ""
         for i in range(len(self.lanes) - 1):
-            vals = [" . "] * len(self.base())
-            gaps = ["   "] * len(self.base())
+            vals = [" . "] * len(self.base)
+            gaps = ["   "] * len(self.base)
             lane = self.lanes[i]
             for v in lane:
-                num = self.base().index(v)
+                num = self.base.index(v)
                 if num is not None:
                     vals[num] = " " + repr(v) + " "
                     gaps[num] = " | "
@@ -105,7 +105,7 @@ class SkipList[T]:
             out += "".join(vals) + "\n"
             out += "".join(gaps) + "\n"
 
-        out += str(self.base())
+        out += str(self.base)
         return out
 
         # go through each lane and make two lists the same width as len(base) one populated with dots and the other with spaces
@@ -143,7 +143,7 @@ class SkipList[T]:
 
             if lane_iter == None:
                 self.lanes[-level].push(temp)
-                cur_node = self.lanes[-level].back()
+                cur_node = self.lanes[-level].tail()
             else:
                 self.lanes[-level].insert(temp, lane_iter)
                 cur_node = lane_iter.node
@@ -191,7 +191,7 @@ class SkipList[T]:
     # base algo (original with singly linked list) returns the listIterator to the base that either points to the first instance of the value or the value directly above it .: can just add to base at the place iter that has been returned)
     def search(self, val):
         if val < self.front().value:
-            return self.base().begin()
+            return self.base.begin()
         if val > self.back().value:
             return None  # needs to not return the last value as insert doesn't work at the last value so it needs a special return to show that it needs to be pushed instead
         lane = 0
@@ -269,10 +269,11 @@ class SkipList[T]:
 
     # returns the number of elements in the base list
     def num_elements(self):
-        return self.base().size()
+        return self.base.size()
 
-    # returns the base linked list
+    @property
     def base(self):
+        """returns the base linked list"""
         return self.lanes[-1]
 
     # returns true id the skip list is emtpy
@@ -281,19 +282,19 @@ class SkipList[T]:
 
     # dunder method to make len(skipList) work
     def __len__(self):
-        return self.base().size()
+        return self.base.size
 
     # converts skip list to list based off linked list method
     def convert_to_list(self):
-        return self.base().convert_to_list()
+        return self.base.convert_to_list()
 
     # returns the first node of the base
     def front(self):
-        return self.base().front()
+        return self.base.front()
 
     # returns the last node of the base
-    def back(self):
-        return self.base().back()
+    def tail(self):
+        return self.base.tail()
 
     # dunder method so that if val in skipList works
     def __contains__(self, val):
@@ -309,14 +310,14 @@ class SkipList[T]:
 
     # pops the last node from the skip list (based off the c++ pop)
     def pop(self):
-        val = self.back()
+        val = self.tail()
         for i in range(self.size_):
-            if self.lanes[i].back() == val:
+            if self.lanes[i].tail() == val:
                 self.lanes[i].pop()
 
     # fully reconfigures the skip list to contain more lanes, re-issuing new max heights to each element using the same initial process
     def reconfigure(self, new_height):
-        lst = self.base()
+        lst = self.base
         self.lanes = []
         self.size_ = new_height
         for i in range(new_height):
