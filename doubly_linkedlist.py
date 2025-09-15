@@ -111,9 +111,9 @@ class LinkedList[T](MutableSequence[T]):
     # insert a value into the list at a specific positon (given either an index value or a list iterator) -- cannot insert to the end (pushes back the value currently in that spot)
     def insert(self, value, pos):
         temp_node = None
-        if type(pos) == int:
+        if isinstance(pos, int):
             temp_node = self.__getitem__(pos)
-        elif type(pos) == ListIterator:
+        elif isinstance(pos, ListIterator):
             temp_node = pos.get_node()
         else:
             raise Exception("pos needs to be an int or listIterator")
@@ -122,12 +122,12 @@ class LinkedList[T](MutableSequence[T]):
             prev_node = temp_node.prev
             new_node = Node(value, prev_node, temp_node)
             temp_node.set_prev(new_node)
-            if prev_node != None:
+            if prev_node is not None:
                 prev_node.set_next(new_node)
             else:
                 self.head = new_node
             self.size += 1
-        except:
+        except Exception:
             print("There was an error inserting")
 
     # returns the node at the front of the list
@@ -174,7 +174,7 @@ class LinkedList[T](MutableSequence[T]):
     # given an iterator for the destination of the data (within the current list), an iterator that points to where the data should come from and the number of elements to be moved, this method will transfer the nodes to directly after the destination node cutting them from where they originally were
     def splice(self, dest, source, length):
         # if no length is entered it is autoatically set to 1
-        if length == None:
+        if length is None:
             length = 1
 
         # connecting the front of the splice section to the destination
@@ -190,7 +190,7 @@ class LinkedList[T](MutableSequence[T]):
 
             # if dest isn't the last value in the list, the end of the splice section is connected to it
             temp_end = dest.get_node().prev
-            if temp_end != None:
+            if temp_end is not None:
                 end = source + length
                 end.get_node().set_next(temp_end)
                 end.get_node().prev.set_prev(end.get_node())
@@ -199,7 +199,7 @@ class LinkedList[T](MutableSequence[T]):
         sourceEnd = (source + length).get_node().prev
         if source.list.head == source.get_node():
             source.list.head = (source + length).get_node().prev
-            if sourceEnd != None:
+            if sourceEnd is not None:
                 sourceEnd.set_prev(None)
         else:
             sourcePrev = source.get_node().prev

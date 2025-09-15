@@ -29,7 +29,6 @@ class SkipList[T]:
         for i in range(height):
             self.lanes.append(LinkedList([]))
 
-
         # if initial is a list - using the list to work initial values into the skip list
         if isinstance(initial, list):
             initial = LinkedList(initial)
@@ -41,12 +40,11 @@ class SkipList[T]:
             level = 1
             raised = random.choice([True, False])
             self.lanes[-1].push(base)
-            while level < height and raised == True:
+            while level < height and raised:
                 level += 1
                 self.lanes[-level].push(cur_val)
                 cur_val = self.lanes[-level].tail().value
                 raised = random.choice([True, False])
-
 
     def __repr__(self):
         return f"SkipList({self.size_}, {self.base})"
@@ -122,11 +120,11 @@ class SkipList[T]:
         cur_node = self.lanes[-1][temp_index]
         level = 2
         raised = random.choice([True, False])
-        while level <= self.size_ and raised == True:
+        while level <= self.size_ and raised:
             lane_iter = self.lane_search(val, (self.size_ - level))
             temp = SkipListIterator(cur_node, val, self.lanes[-(level)])
 
-            if lane_iter == None:
+            if lane_iter is None:
                 self.lanes[-level].push(temp)
                 cur_node = self.lanes[-level].tail()
             else:
@@ -232,7 +230,7 @@ class SkipList[T]:
                 a = self.search_rec(temp, temp, lane + 1, val, True)
                 return a
         else:
-            if cur_iter.node.prev != None:
+            if cur_iter.node.prev is not None:
                 temp = cur_iter
                 a = self.search_rec(cur_iter + 1, temp, lane, val, False)
                 return a
@@ -313,7 +311,7 @@ class SkipList[T]:
             level = 1
             raised = random.choice([True, False])
             self.lanes[-1].push(base)
-            while level < (new_height) and raised == True:
+            while level < (new_height) and raised:
                 temp = SkipListIterator(cur_val, base, self.lanes[-level])
                 level += 1
                 self.lanes[-level].push(temp)
@@ -339,7 +337,7 @@ class SkipListIterator[T]:
     # dunder method so that iterator+=number will correctly increment it with relation to the current lane of the skip list
     def __iadd__(self, other: int):
         for i in range(other):
-            if self.node.prev != None:
+            if self.node.prev is not None:
                 self.node = self.node.prev
             else:
                 return None
@@ -349,7 +347,7 @@ class SkipListIterator[T]:
     def __add__(self, other: int):
         temp = ListIterator(self.node, self.list)
         for i in range(other):
-            if temp.node.prev != None:
+            if temp.node.prev is not None:
                 temp.node = temp.node.prev
             else:
                 break
@@ -358,7 +356,7 @@ class SkipListIterator[T]:
     # dunder method such that iterator-=number will decrement the iterator with respect to the current lane of the skip list
     def __isub__(self, other: int):
         for i in range(other):
-            if self.node.prev != None:
+            if self.node.prev is not None:
                 self.node = self.node.prev
             else:
                 return None
@@ -368,7 +366,7 @@ class SkipListIterator[T]:
     def __sub__(self, other: int):
         temp = ListIterator(self.node, self.list)
         for i in range(other):
-            if temp.node.prev != None:
+            if temp.node.prev is not None:
                 temp.node = temp.node.prev
             else:
                 break

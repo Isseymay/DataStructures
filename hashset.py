@@ -52,14 +52,14 @@ class HashSet:
             for i in self.buckets:
                 out += f"{i}, "
             out = out[:-2]
-            out += f"]\n"
+            out += "]\n"
             return out
         else:
             out = ""
             for i in range(len(self.buckets)):
                 out += f"{i}: "
                 iter = copy.copy(self.buckets[i])
-                while iter != None and self.bucket(iter.val()) == i:
+                while iter is not None and self.bucket(iter.val()) == i:
                     out += f"{iter.get_node()}, "
                     iter += 1
                 out += "\n"
@@ -67,11 +67,11 @@ class HashSet:
             return out
 
     def insert(self, value):
-        if self.keys == None:
+        if self.keys is None:
             self.keys = LinkedList([])
         if value not in self.keys:
             hashed = self.bucket(value)
-            if self.buckets[hashed] == None:
+            if self.buckets[hashed] is None:
                 self.keys.push(value)
                 self.buckets[hashed] = self.keys.end()
             else:
@@ -104,12 +104,12 @@ class HashSet:
             iter = self.buckets[pos]
             count = 0
             ogHash = self.bucket(iter.val())
-            while iter.get_node().prev != None:
+            while iter.get_node().prev is not None:
                 if self.bucket(iter.val()) != ogHash:
                     break
                 count += 1
                 iter += 1
-            if iter.get_node().prev == None:
+            if iter.get_node().prev is None:
                 if self.bucket(iter.val()) == ogHash:
                     count += 1
             return count
@@ -119,7 +119,7 @@ class HashSet:
     def __contains__(self, value):
         hashed = self.bucket(value)
         iter = self.buckets[hashed]
-        while iter.get_node().prev != None:
+        while iter.get_node().prev is not None:
             if iter.val() == value:
                 return True
 
@@ -128,7 +128,7 @@ class HashSet:
 
             iter += 1
 
-        if iter.get_node().prev == None and iter.val() == value:
+        if iter.get_node().prev is None and iter.val() == value:
             return True
         return False
 
@@ -136,7 +136,7 @@ class HashSet:
     def find(self, value):
         hashed = self.bucket(value)
         iter = self.buckets[hashed]
-        while iter.get_node().prev != None:
+        while iter.get_node().prev is not None:
             if iter.val() == value:
                 return iter
 
@@ -145,15 +145,15 @@ class HashSet:
 
             iter += 1
 
-        if iter.get_node().prev == None and iter.val() == value:
+        if iter.get_node().prev is None and iter.val() == value:
             return iter
         return None
 
     def erase(self, val):
         value = None
-        if type(val) == int:
+        if isinstance(val, int):
             value = val
-        elif type(val) == ListIterator:
+        elif isinstance(val, ListIterator):
             value = val.val()
 
         self.keys.delete(value)
@@ -184,7 +184,7 @@ class HashSet:
             hashed = self.bucket(key)
             dest = self.buckets[hashed]
             old += 1
-            if dest != None:
+            if dest is not None:
                 self.keys.splice(dest, temp, cur)
                 self.buckets[hashed] = dest - 1
             else:
